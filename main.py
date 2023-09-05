@@ -127,7 +127,7 @@ if __name__ == '__main__':
     '''----------------------- P R O D U C T S -------------------------'''
 
     @mycommands.command()
-    @click.option('--name', '-pn', default=None, prompt='Enter product name to search for', type=str, help="Search for a product by name")
+    @click.option('--name', '-pn', default=None, type=str, help="Search for a product by name")
     def view_product_details(name):
         if name is None:
             for product in session.query(Product):
