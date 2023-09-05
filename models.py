@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 
+
 engine = create_engine('sqlite:///retail_store_management.db')
 Session = sessionmaker(bind=engine)
 session = Session()

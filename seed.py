@@ -23,7 +23,7 @@ if __name__ == '__main__':
     '''----------------------- C A T E G O R I E S ______________________--'''
     for item in categories:
         new_category = Category(
-            name=item
+            name=f'C-{item}'
         )
         session.add(new_category)
         session.commit()
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     '''----------------------- S U P P L I E R S ______________________--'''
     for item in suppliers:
         new_supplier = Supplier(
-            name=item
+            name=f'S-{item}'
         )
         session.add(new_supplier)
         session.commit()
@@ -45,7 +45,7 @@ if __name__ == '__main__':
             supplier = session.query(Supplier).order_by(func.random()).first()
             category = session.query(Category).order_by(func.random()).first()
             new_product = Product(
-                name = fake.name(),
+                name = f'P-{fake.name()}',
                 price=round(random.uniform(100,1000),2),
                 quantity=random.randint(0,50),
                 supplier_id=supplier.id,

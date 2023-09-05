@@ -1,7 +1,7 @@
 from models import *
+category_search_name = 'fresh'
+supplier_products = session.query(Product).join(Product.category).filter(Category.name == 'Fresh Produce').all()
+category_products = session.query(Product).join(Category.products).filter(Category.name.like(f'%{category_search_name}%')).all()
 
-supplier_products = session.query(Product).filter(Supplier.id == 24).all()
-
-supplier = session.query(Supplier).filter(Supplier.id == 1).first()
 print(supplier_products)
-print(supplier)
+print(category_products)
