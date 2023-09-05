@@ -50,11 +50,17 @@ if __name__ == '__main__':
         category_to_delete = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
         click.echo(f"{category_to_delete}")
         if category_to_delete:
-            session.query(Category).filter_by(id=category_to_delete.id).delete()
+            session.delete(category_to_delete)
             session.commit()
             click.echo("Category successfully deleted!")
         else:
             click.echo("Sorry! That category does not exist and cannot be deleted.")
+
+    @mycommands.command()
+    @click.option('--category_name', '--cn', prompt="Enter the category to filter by")
+    def view_category_products(category_name):
+        click.echo(session.query(Product).join(Category.products).filter(Category.name.like(f'%{category_name}%')).all())
+
 
 if __name__ == '__main__':
     mycommands()

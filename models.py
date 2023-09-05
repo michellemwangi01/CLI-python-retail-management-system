@@ -15,10 +15,10 @@ class Category(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(String())
 
-    products = relationship('Product', back_populates='category')
+    products = relationship('Product', back_populates='category', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'({self.id}) {self.name}\n'
+        return f'({self.id}) Name:{self.name}\n'
 
 
 class Product(Base):
@@ -35,7 +35,7 @@ class Product(Base):
     supplier = relationship('Supplier', back_populates='products')
 
     def __repr__(self):
-        return f'({self.id}) {self.name}, {self.price}, {self.quantity}\n'
+        return f'({self.id}) Name:{self.name}, Price:{self.price}, Quantity:{self.quantity}\n'
 
 
 class Supplier(Base):
@@ -44,7 +44,7 @@ class Supplier(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(String())
 
-    products = relationship('Product', back_populates='supplier')
+    products = relationship('Product', back_populates='supplier', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'({self.id}) {self.name}'
