@@ -18,7 +18,7 @@ class Category(Base):
     products = relationship('Product', back_populates='category')
 
     def __repr__(self):
-        return f'({self.id}) {self.name}'
+        return f'({self.id}) {self.name}\n'
 
 
 class Product(Base):

@@ -5,12 +5,16 @@ if __name__ == '__main__':
 
     categories = session.query(Category.name).all()
 
-
     @click.group()
     def mycommands():
         pass
 
-        '''----------------------- C A T E G O R I E S ______________________--'''
+    '''----------------------- C A T E G O R I E S ______________________--'''
+    @mycommands.command()
+    def view_categories():
+        click.echo(session.query(Category).all())
+
+
     @mycommands.command()
     @click.option('--name', '-n', prompt="Enter the category name")
     def new_category(name):
@@ -40,6 +44,17 @@ if __name__ == '__main__':
             click.echo("Sorry! That category does not exist and cannot be updated.")
 
 
+    @mycommands.command()
+    @click.option('--search_name', '-sn', prompt="Enter the category name to delete")
+    def delete_category(search_name):
+        category_to_delete = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
+        click.echo(f"{category_to_delete}")
+        if category_to_delete:
+            session.query(Category).filter_by(id=category_to_delete.id).delete()
+            session.commit()
+            click.echo("Category successfully deleted!")
+        else:
+            click.echo("Sorry! That category does not exist and cannot be deleted.")
 
 if __name__ == '__main__':
     mycommands()
