@@ -35,7 +35,7 @@ class Product(Base):
     supplier = relationship('Supplier', back_populates='products')
 
     def __repr__(self):
-        return f'({self.id}) Name:{self.name}, Price:{self.price}, Quantity:{self.quantity}\n'
+        return f'({self.id}): Name:{self.name}, Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Product:{self.supplier.name}'
 
 
 class Supplier(Base):
@@ -47,4 +47,4 @@ class Supplier(Base):
     products = relationship('Product', back_populates='supplier', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'({self.id}) {self.name}'
+        return f'({self.id}) {self.name}\n'
