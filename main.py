@@ -3,7 +3,6 @@ import click
 
 if __name__ == '__main__':
 
-
     @click.group()
     def mycommands():
         pass
@@ -70,7 +69,10 @@ if __name__ == '__main__':
         click.echo(
             session.query(Product).join(Category.products).filter(Category.name.like(f'%{category_name}%')).all())
 
+
     '''----------------------- S U P P L I E R -------------------------'''
+
+
     @mycommands.command()
     def view_suppliers():
         click.echo(session.query(Supplier).all())
@@ -118,20 +120,24 @@ if __name__ == '__main__':
         else:
             click.echo("Sorry! That supplier does not exist and cannot be deleted.")
 
+
     @mycommands.command()
     @click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
     def view_supplier_products(search_supplier):
-        click.echo(session.query(Product).join(Product.supplier).filter(Supplier.name.like(f'%{search_supplier}%')).all())
+        click.echo(
+            session.query(Product).join(Product.supplier).filter(Supplier.name.like(f'%{search_supplier}%')).all())
 
 
     '''----------------------- P R O D U C T S -------------------------'''
+
 
     @mycommands.command()
     @click.option('--name', '-pn', default=None, type=str, help="Search for a product by name")
     def view_product_details(name):
         if name is None:
             for product in session.query(Product):
-                click.echo(f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+                click.echo(
+                    f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
         else:
             product = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
             if product:
@@ -139,6 +145,7 @@ if __name__ == '__main__':
                     f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
             else:
                 click.echo("Product you searched fo does not exist.")
+
 
     @mycommands.command()
     @click.option('--name', '-n', prompt="Enter the product name", type=str)
@@ -166,17 +173,97 @@ if __name__ == '__main__':
             click.echo("Sorry! Category or Supplier you entered does not exist.")
 
 
+    @mycommands.command()
+    @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
+    def delete_product(name):
+        product_to_delete = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
+        if product_to_delete:
+            session.delete(product_to_delete)
+            session.commit()
+            click.echo("Product has been successfully deleted")
+        else:
+            click.echo("Error! No such product exists.")
 
 
+    # @mycommands.command()
+    # @click.option('--name', '-n', prompt="Enter the product to update")
+    # @click.option('--new_name', '-n', default=None)
+    # @click.option('--price', '-p', type=int, default=None)
+    # @click.option('--supplier', '-s', default=None)
+    # @click.option('--category', '-c', default=None)
+    # @click.option('--quantity', '-c', type=int, default=None)
+    # def update_products(name, new_name, price, quantity, supplier, category):
+    #     update_data = {}
+    #     product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
+    #     print(product_to_update.id)
+    #     if product_to_update:
+    #         click.echo(f"{product_to_update}")
+    #         if new_name is not None:
+    #             update_data['name'] = f'P-{new_name}'
+    #         if price is not None:
+    #             update_data['price'] = price
+    #         if quantity is not None:
+    #             update_data['quantity'] = quantity
+    #
+    #         if supplier:
+    #             supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
+    #             if supplier_record:
+    #                 update_data['supplier_id'] = supplier_record.id
+    #             else:
+    #                 click.echo("Entered supplier does not exist")
+    #         if category:
+    #             category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
+    #             if category_record:
+    #                 update_data['category_id'] = category_record.id
+    #             else:
+    #                 click.echo("Entered category does not exist")
+    #
+    #         session.query(Product).filter_by(id=product_to_update.id).update(update_data)
+    #         session.commit()
+    #         click.echo("Product is successfully updated!")
+    #     else:
+    #         click.echo("Sorry! That product does not exist and cannot be updated.")
 
+    @mycommands.command()
+    @click.option('--name', '-n', prompt="Enter the product to update")
+    @click.option('--new_name', '-nn', default=None)
+    @click.option('--price', '-p', type=int, default=None)
+    @click.option('--supplier', '-s', default=None)
+    @click.option('--category', '-c', default=None)
+    @click.option('--quantity', '-q', type=int, default=None)
+    def update_products(name, new_name, price, quantity, supplier, category):
+        update_data = {}
+        product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
 
+        if product_to_update:
+            click.echo(f"{product_to_update}")
 
+            if new_name is not None:
+                update_data['name'] = f'P-{new_name}'
+            if price is not None:
+                update_data['price'] = price
+            if quantity is not None:
+                update_data['quantity'] = quantity
 
+            if supplier:
+                supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
+                if supplier_record:
+                    update_data['supplier_id'] = supplier_record.id
+                else:
+                    click.echo("Entered supplier does not exist")
 
-
-
-
-
+            if category:
+                category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
+                if category_record:
+                    update_data['category_id'] = category_record.id
+                else:
+                    click.echo("Entered category does not exist")
+            print(update_data)
+            session.query(Product).filter_by(id=product_to_update.id).update(update_data)
+            session.commit()
+            click.echo("Product is successfully updated!")
+        else:
+            click.echo("Sorry! That product does not exist and cannot be updated.")
 
 
     # Invoke mycommands method which calls all the commands
