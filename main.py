@@ -127,10 +127,43 @@ if __name__ == '__main__':
     '''----------------------- P R O D U C T S -------------------------'''
 
     @mycommands.command()
-    def view_products():
-        products = session.query(Product)
-        for product in products:
-            click.echo(f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+    @click.option('--name', '-pn', default=None, prompt='Enter product name to search for', type=str, help="Search for a product by name")
+    def view_product_details(name):
+        if name is None:
+            for product in session.query(Product):
+                click.echo(f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+        else:
+            product = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
+            if product:
+                click.echo(
+                    f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+            else:
+                click.echo("Product you searched fo does not exist.")
+
+    @mycommands.command()
+    @click.option('--name', '-n', prompt="Enter the product name", type=str)
+    @click.option('--category', '-c', prompt="Enter the category", type=str)
+    @click.option('--supplier', '-s', prompt="Enter the supplier name", type=str)
+    @click.option('--price', '-p', prompt="Enter the price", type=float)
+    @click.option('--quantity', '-q', prompt="Enter the quantity", type=int)
+    def add_product(name, category, supplier, price, quantity):
+        category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
+        supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
+        click.echo(category_record)
+        click.echo(supplier_record)
+        if category_record and supplier_record:
+            new_product = Product(
+                name=f'P-{name}',
+                supplier_id=supplier_record.id,
+                category_id=category_record.id,
+                price=price,
+                quantity=quantity,
+            )
+            session.add(new_product)
+            session.commit()
+            click.echo("New product added successfully!")
+        else:
+            click.echo("Sorry! Category or Supplier you entered does not exist.")
 
 
 
