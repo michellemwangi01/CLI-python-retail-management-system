@@ -184,76 +184,43 @@ if __name__ == '__main__':
         else:
             click.echo("Error! No such product exists.")
 
-
-    # @mycommands.command()
-    # @click.option('--name', '-n', prompt="Enter the product to update")
-    # @click.option('--new_name', '-n', default=None)
-    # @click.option('--price', '-p', type=int, default=None)
-    # @click.option('--supplier', '-s', default=None)
-    # @click.option('--category', '-c', default=None)
-    # @click.option('--quantity', '-c', type=int, default=None)
-    # def update_products(name, new_name, price, quantity, supplier, category):
-    #     update_data = {}
-    #     product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
-    #     print(product_to_update.id)
-    #     if product_to_update:
-    #         click.echo(f"{product_to_update}")
-    #         if new_name is not None:
-    #             update_data['name'] = f'P-{new_name}'
-    #         if price is not None:
-    #             update_data['price'] = price
-    #         if quantity is not None:
-    #             update_data['quantity'] = quantity
-    #
-    #         if supplier:
-    #             supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
-    #             if supplier_record:
-    #                 update_data['supplier_id'] = supplier_record.id
-    #             else:
-    #                 click.echo("Entered supplier does not exist")
-    #         if category:
-    #             category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
-    #             if category_record:
-    #                 update_data['category_id'] = category_record.id
-    #             else:
-    #                 click.echo("Entered category does not exist")
-    #
-    #         session.query(Product).filter_by(id=product_to_update.id).update(update_data)
-    #         session.commit()
-    #         click.echo("Product is successfully updated!")
-    #     else:
-    #         click.echo("Sorry! That product does not exist and cannot be updated.")
+    product_details = {
+        "name": "name",
+        "price": "price",
+        "quantity": "quantity",
+        "category": "category",
+        "supplier": "supplier",
+    }
 
     @mycommands.command()
-    @click.option('--name', '-n', prompt="Enter the product to update")
-    @click.option('--new_name', '-nn', default=None)
-    @click.option('--price', '-p', type=int, default=None)
-    @click.option('--supplier', '-s', default=None)
-    @click.option('--category', '-c', default=None)
-    @click.option('--quantity', '-q', type=int, default=None)
-    def update_products(name, new_name, price, quantity, supplier, category):
-        update_data = {}
+    @click.option('--choice', '-n', prompt="What would you like to update? Select", type=click.Choice(product_details))
+    @click.option('--name', '-n', prompt="What product would you like to update? (name)")
+    def update_product(choice, name):
         product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
-
+        update_data = {}
         if product_to_update:
             click.echo(f"{product_to_update}")
-
-            if new_name is not None:
+            if choice.lower() == 'name':
+                new_name = click.prompt("Enter the new name")
                 update_data['name'] = f'P-{new_name}'
-            if price is not None:
-                update_data['price'] = price
-            if quantity is not None:
-                update_data['quantity'] = quantity
+            if choice.lower() == 'price':
+                new_price = click.prompt("Enter the new price")
+                update_data['price'] = new_price
+            if choice.lower() == 'quantity':
+                new_quantity = click.prompt("Enter the new quantity")
+                update_data['quantity'] = new_quantity
 
-            if supplier:
-                supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
+            # update foreign key values
+            if choice.lower() == 'supplier':
+                update_to_supplier = click.prompt("Enter the new supplier")
+                supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{update_to_supplier}%')).first()
                 if supplier_record:
                     update_data['supplier_id'] = supplier_record.id
                 else:
                     click.echo("Entered supplier does not exist")
-
-            if category:
-                category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
+            if choice.lower() == 'category':
+                update_to_category = click.prompt("Enter the new category")
+                category_record = session.query(Category).filter(Category.name.like(f'%{update_to_category}%')).first()
                 if category_record:
                     update_data['category_id'] = category_record.id
                 else:
