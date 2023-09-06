@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func, Table, DateTime
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func, Table, DateTime, and_
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
