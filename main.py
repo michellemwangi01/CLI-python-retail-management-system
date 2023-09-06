@@ -63,7 +63,7 @@ def delete_category(search_name):
                 products_to_update_category = session.query(Product).filter(
                     Product.category_id == category_to_delete.id).all()
                 if products_to_update_category:
-                    categories = session.query(Supplier).filter(Supplier.id != category_to_delete.id).all()
+                    categories = session.query(Category).filter(Category.id != category_to_delete.id).all()
                     random_category = random.choice(categories)
                     session.query(Product).filter(Product.category_id == category_to_delete.id).update(
                         {
@@ -94,7 +94,7 @@ def delete_category(search_name):
                     click.style("------------------- CATEGORY SUCCESSFULLY DELETED ---------------------", fg='green',
                                 bold=True))
             else:
-                click.command(click.style("ERROR! Input Invalid", fg='red', bold=True))
+                click.echo(click.style("ERROR! Input Invalid", fg='red', bold=True))
         elif confirmation.lower() == 'n':
             click.echo(click.style("Delete Action Aborted!", fg='red', bold=True))
         else:
