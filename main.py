@@ -206,14 +206,8 @@ def delete_product(name):
         click.echo("Error! No such product exists.")
 
 
-product_details = ("name","price", "quantity", "category","supplier")
-table_options = {
-    "products": Product,
-    "categories": Category,
-    "suppliers": Supplier,
-    "customers": Customer,
-    "purchases": Purchase
-}
+product_details = ("name", "price", "quantity", "category", "supplier")
+
 
 
 @mycommands.command()
@@ -269,137 +263,65 @@ def add_purchase(customer_name, product_name, quantity):
     product = session.query(Product).filter(Product.name.like(f'%{product_name}%')).first()
 
     if customer and product:
-        existing_purchase = session.query(Purchase).filter(and_(
-                Purchase.customer_id == customer.id,
-                Purchase.product_id == product.id
-            )
-        ).first()
-        print(f'existing_purchase: {existing_purchase}')
-        if existing_purchase:
-            session.query(Purchase).filter(
-                Purchase.customer_id == customer.id,
-                Purchase.product_id == product.id
-            ).update({
-                Purchase.quantity: Purchase.quantity+quantity
+        # existing_purchase = session.query(Purchase).filter(and_(
+        #         Purchase.customer_id == customer.id,
+        #         Purchase.product_id == product.id
+        #     )
+        # ).first()
+        # print(f'existing_purchase: {existing_purchase}')
+        # if existing_purchase:
+        #     session.query(Purchase).filter(
+        #         Purchase.customer_id == customer.id,
+        #         Purchase.product_id == product.id
+        #     ).update({
+        #         Purchase.quantity: Purchase.quantity+quantity
+        #     })
+        #     session.commit()
+        #     click.echo("This purchase already exists in the database. \n"
+        #                "------------ QUANTITY SUCCESSFULLY UPDATED ----------- ")
+        # else:
+        new_purchase = Purchase(
+            customer_id=customer.id,
+            product_id=product.id,
+            quantity=quantity
+        )
+        session.add(new_purchase)
+        product_to_update = session.query(Product).filter(Product.id == product.id).first()
+        if product_to_update.quantity > quantity:
+            session.query(Product).filter(Product.id == product.id).update({
+                Product.quantity: Product.quantity - quantity
             })
             session.commit()
-            click.echo("This purchase already exists in the database. \n"
-                       "------------ QUANTITY SUCCESSFULLY UPDATED ----------- ")
         else:
-            new_purchase = Purchase(
-                customer_id=customer.id,
-                product_id=product.id,
-                quantity=quantity
-            )
-            session.add(new_purchase)
-            product_to_update = session.query(Product).filter(Product.id==product.id).first()
-            print(f'product_to_update: {product_to_update.quantity}')
-            if product_to_update.quantity > quantity:
-                session.query(Product).filter(Product.id==product.id).update({
-                    Product.quantity: Product.quantity - quantity
-                })
-                session.commit()
-            else:
-                click.echo(f"-------------- ERROR ------------\n"
-                           f"Only {product.quantity} remaining to be purchased!")
+            click.echo(f"-------------- ERROR ------------\n"
+                       f"Unable to purchase. Only {product.quantity} item remaining to be purchased!")
 
-            session.commit()
-            click.echo("----------- PURCHASE SUCCESSFULLY ADDED ------------")
+        session.commit()
+        click.echo("----------- PURCHASE SUCCESSFULLY ADDED ------------")
     else:
         click.echo("ERROR! Product or Customer you entered does not exist")
 
 
-purchase_details = ("customer","product", "quantity")
+@mycommands.command()
+@click.option('--name', '-f', prompt="Name of customer")
+def view_customer_purchase_details(name):
+    customer = session.query(Customer).filter(Customer.full_name.like(f'%{name}%')).first()
+    if customer:
+        for purchase in customer.purchases:
+            click.echo(f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity}\n')
+    else:
+        click.echo("ERROR! Entered customer was not found.")
+
 
 @mycommands.command()
-@click.option('--choice', '-n', prompt="What column would you like to update? Select", type=click.Choice(purchase_details))
-@click.option('--name', '-n', prompt="Which purchase record would you like to update? (name)")
-def update_purchase(choice, name):
-    purchase_to_update = session.query(Purchase).filter(Purchase.customer.name.like(f'%{name}%')).first()
-    print(purchase_to_update)
-    update_data = {}
-    if purchase_to_update:
-        click.echo(f"{purchase_to_update}")
-        if choice.lower() == 'quantity':
-            new_quantity = click.prompt("Enter the new quantity")
-            update_data['quantity'] = new_quantity
-
-        # update foreign key values
-        if choice.lower() == 'customer':
-            update_to_customer = click.prompt("Enter the new customer name")
-            customer_record = session.query(Supplier).filter(Supplier.name.like(f'%{update_to_customer}%')).first()
-            if customer_record:
-                update_data['customer_id'] = customer_record.id
-            else:
-                click.echo(
-                    "Entered customer does not exist. View existing purchases using the 'view-purchases' command.")
-        if choice.lower() == 'product':
-            update_to_product = click.prompt("Enter the new product name")
-            product_record = session.query(Category).filter(Category.name.like(f'%{update_to_product}%')).first()
-            if product_record:
-                update_data['product_id'] = product_record.id
-            else:
-                click.echo(
-                    "Entered product does not exist. View existing products using the 'view-products' command.")
-        print(update_data)
-        session.query(Product).filter_by(id=purchase_to_update.id).update(update_data)
-        session.commit()
-        click.echo("Purchase is successfully updated!")
+@click.option('--name', '-f', prompt="Name of product")
+def view_product_purchase_details(name):
+    product = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
+    if product:
+        for purchase in product.purchases:
+            click.echo(f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity}\n')
     else:
-        click.echo(
-            "Sorry! That purchase record does not exist and cannot be updated. View existing purchases using the 'view-purchase-details' command.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# @mycommands.command()
-# @click.option('--choice', '-n', prompt="Table to delete from? Select", type=click.Choice(table_options))
-# @click.option('--name', '-n', prompt="Record from the table to delete (name)")
-# def delete_records(choice, name):
-#     print(choice, name)
-#     record_to_delete = session.query(table_options[choice]).filter(table_options[choice].name.like(f'%{name.title()}%')).first()
-#     print(record_to_delete)
-#     if record_to_delete:
-#         session.delete(record_to_delete)
-#         session.commit()
-#         click.echo("Product has been successfully deleted")
-#     else:
-#         click.echo("Error! No such product exists.")
-
-
+        click.echo("ERROR! Entered product was not found.")
 if __name__ == '__main__':
     # Invoke mycommandss() method which calls all the commands
     mycommands()
