@@ -1,3 +1,5 @@
+import random
+
 from models import *
 import click
 
@@ -129,15 +131,48 @@ def update_supplier(search_name, new_name):
         click.echo("Sorry! That supplier does not exist and cannot be updated.")
 
 
-@mycommands.command()
-@click.option('--search_name', '-sn', prompt="Enter the category name to delete")
+@mycommands.command('')
+@click.option('--search_name', '-sn', prompt="Enter the supplier name to delete")
 def delete_supplier(search_name):
     supplier_to_delete = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
-    click.echo(f"{supplier_to_delete}")
     if supplier_to_delete:
-        session.delete(supplier_to_delete)
-        session.commit()
-        click.echo("Supplier successfully deleted!")
+        confirmation = click.prompt("To complete delete, related product records will be updated to a different supplier via auto-assign or selected supplier. Continue? Y/N")
+        if confirmation.lower() == 'y':
+            supplier_update_mode = click.prompt("Update via auto-assign or selected supplier? Enter 1 or 2 to choose.\n1. Auto-assign (1)\n2. Select Supplier(2)\nEnter Selection:", type=int)
+            if supplier_update_mode == 1:
+                products_to_update_supplier = session.query(Product).filter(Product.supplier_id == supplier_to_delete.id).all()
+                if products_to_update_supplier:
+                    suppliers = session.query(Supplier).filter(Supplier.id != supplier_to_delete.id).all()
+                    random_supplier = random.choice(suppliers)
+                    session.query(Product).filter(Product.supplier_id == supplier_to_delete.id).update(
+                        {
+                            Product.supplier_id: random_supplier.id
+                        }
+                    )
+                    click.echo(f"Product Suppliers successfully updated to {random_supplier}!")
+                    session.delete(supplier_to_delete)
+                    session.commit()
+                    click.echo("------------------- SUPPLIER SUCCESSFULLY DELETED ---------------------")
+                else:
+                    click.echo("No related products found!")
+            elif supplier_update_mode == 2:
+                new_supplier_name = click.prompt("Which supplier would you like to transfer the product records to?")
+                new_supplier = session.query(Supplier).filter(Supplier.name.like(f'%{new_supplier_name}%')).first()
+                session.query(Product).filter(Product.supplier_id == supplier_to_delete.id).update(
+                    {
+                        Product.supplier_id: new_supplier.id
+                    }
+                )
+                click.echo("Product Suppliers successfully updated!")
+                session.delete(supplier_to_delete)
+                session.commit()
+                click.echo("------------------- SUPPLIER SUCCESSFULLY DELETED ---------------------")
+            else:
+                click.command("ERROR! Input Invalid")
+        elif confirmation.lower() == 'n':
+            click.echo("Delete Action Aborted!")
+        else:
+            click.echo("ERROR! Invalid input!")
     else:
         click.echo("Sorry! That supplier does not exist and cannot be deleted.")
 
@@ -322,6 +357,8 @@ def view_product_purchase_details(name):
             click.echo(f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity}\n')
     else:
         click.echo("ERROR! Entered product was not found.")
+
+
 if __name__ == '__main__':
-    # Invoke mycommandss() method which calls all the commands
+    # Invoke mycommands() method which calls all the commands
     mycommands()
