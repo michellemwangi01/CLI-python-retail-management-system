@@ -14,12 +14,14 @@ def mycommands():
 
 @mycommands.command()
 def view_categories():
+    '''View list of all categories'''
     click.echo(session.query(Category).all())
 
 
 @mycommands.command()
 @click.option('--name', '-n', prompt="Enter the category name")
 def new_category(name):
+    '''Add a new category'''
     categories = session.query(Category)
     if name not in categories:
         new_category = Category(
@@ -36,6 +38,7 @@ def new_category(name):
 @click.option('--search_name', '-sn', prompt="Enter the category name to update")
 @click.option('--new_name', '-nn', prompt="Enter the name to be updated to")
 def update_category(search_name, new_name):
+    '''Update existing category details'''
     category_to_update = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
     click.echo(f"{category_to_update}")
     if category_to_update:
@@ -51,6 +54,7 @@ def update_category(search_name, new_name):
 @mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the category name to delete")
 def delete_category(search_name):
+    '''delete a category'''
     category_to_delete = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
     if category_to_delete:
         confirmation = click.prompt(
@@ -106,8 +110,14 @@ def delete_category(search_name):
 @mycommands.command()
 @click.option('--category_name', '--cn', prompt="Enter the category to filter by")
 def view_category_products(category_name):
-    click.echo(
-        session.query(Product).join(Category.products).filter(Category.name.like(f'%{category_name}%')).all())
+    '''View the all the products of specific category'''
+    category_products = session.query(Product).join(Category.products).filter(Category.name.like(f'%{category_name}%')).all()
+    if category_products:
+        for category_product in category_products:
+            click.echo(click.style(f'{category_product}\n', fg='yellow'))
+    else:
+        click.echo(click.style("ERROR! No such product found.", fg='red', bold=True))
+
 
 
 '''----------------------- S U P P L I E R -------------------------'''
@@ -115,12 +125,16 @@ def view_category_products(category_name):
 
 @mycommands.command()
 def view_suppliers():
-    click.echo(session.query(Supplier).all())
+    '''View list of all suppliers'''
+    suppliers = session.query(Supplier).all()
+    for supplier in suppliers:
+        click.echo(click.style(f"{supplier}",fg='yellow'))
 
 
 @mycommands.command()
 @click.option('--name', '-n', prompt="Enter the supplier name")
 def new_supplier(name):
+    '''Add a new supplier'''
     suppliers = session.query(Supplier)
     if name.lower() not in [supplier.name.lower() for supplier in suppliers]:
         new_supplier = Supplier(
@@ -128,15 +142,16 @@ def new_supplier(name):
         )
         session.add(new_supplier)
         session.commit()
-        click.echo(click.style(f"---------------- SUPPLIER '{name}' SUCCESSFULLY ADDED ---------------", fg='green', bold=True))
+        click.echo(click.style(f"---------------- SUPPLIER SUCCESSFULLY ADDED ---------------", fg='green', bold=True))
     else:
-        click.echo(f"Supplier '{name}' already exists.")
+        click.echo(click.style(f"Supplier '{name}' already exists.", fg="red"))
 
 
 @mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the supplier name to update")
 @click.option('--new_name', '-nn', prompt="Enter the supplier name to update to")
 def update_supplier(search_name, new_name):
+    '''update an existing supplier record'''
     supplier_to_update = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
     click.echo(f"{supplier_to_update}")
     if supplier_to_update:
@@ -144,19 +159,20 @@ def update_supplier(search_name, new_name):
             Supplier.name: f'C-{new_name}'
         })
         session.commit()
-        click.echo("Supplier name successfully updated!")
+        click.echo(click.style("Supplier name successfully updated!", fg='green', bold=True))
     else:
-        click.echo("Sorry! That supplier does not exist and cannot be updated.")
+        click.echo(click.style("ERROR! That supplier does not exist and cannot be updated.", bold=True, fg='red'))
 
 
 @mycommands.command('')
 @click.option('--search_name', '-sn', prompt="Enter the supplier name to delete")
 def delete_supplier(search_name):
+    '''Delete an existing supplier'''
     supplier_to_delete = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
     if supplier_to_delete:
-        confirmation = click.prompt("To complete delete, related product records will be updated to a different supplier via auto-assign or selected supplier. Continue? Y/N")
+        confirmation = click.prompt(click.style("To complete delete, related product records will be updated to a different supplier via auto-assign or selected supplier. Continue? Y/N", fg='cyan'))
         if confirmation.lower() == 'y':
-            supplier_update_mode = click.prompt("Update via auto-assign or selected supplier? Enter 1 or 2 to choose.\n1. Auto-assign (1)\n2. Select Supplier(2)\nEnter Selection", type=int)
+            supplier_update_mode = click.prompt(click.style("Update via auto-assign or selected supplier? Enter 1 or 2 to choose.\n1. Auto-assign (1)\n2. Select Supplier(2)\nEnter Selection", fg='cyan'),type=int)
             if supplier_update_mode == 1:
                 products_to_update_supplier = session.query(Product).filter(Product.supplier_id == supplier_to_delete.id).all()
                 if products_to_update_supplier:
@@ -173,16 +189,16 @@ def delete_supplier(search_name):
                     click.echo(click.style("------------------- SUPPLIER SUCCESSFULLY DELETED ---------------------",
                                            fg='green', bold=True))
                 else:
-                    click.echo("No related products found!")
+                    click.echo(click.style("No related products found!", fg='red'))
             elif supplier_update_mode == 2:
-                new_supplier_name = click.prompt("Which supplier would you like to transfer the product records to?")
+                new_supplier_name = click.prompt(click.style("Which supplier would you like to transfer the product records to?", fg='cyan'))
                 new_supplier = session.query(Supplier).filter(Supplier.name.like(f'%{new_supplier_name}%')).first()
                 session.query(Product).filter(Product.supplier_id == supplier_to_delete.id).update(
                     {
                         Product.supplier_id: new_supplier.id
                     }
                 )
-                click.echo(click.style(f"Product Suppliers successfully updated to {new_supplier}!", fg='red', bold=True))
+                click.echo(click.style(f"Product Suppliers successfully updated to {new_supplier}!", fg='green', bold=True))
                 session.delete(supplier_to_delete)
                 session.commit()
                 click.echo(click.style("------------------- SUPPLIER SUCCESSFULLY DELETED ---------------------", fg='green', bold=True))
@@ -199,8 +215,13 @@ def delete_supplier(search_name):
 @mycommands.command()
 @click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
 def view_supplier_products(search_supplier):
-    click.echo(
-        session.query(Product).join(Product.supplier).filter(Supplier.name.like(f'%{search_supplier}%')).all())
+    '''View supplier products'''
+    supplier_products = session.query(Product).join(Product.supplier).filter(Supplier.name.like(f'%{search_supplier}%')).all()
+    if supplier_products:
+        for supplier_product in supplier_products:
+            click.echo(click.style(f'{supplier_product}', fg='yellow'))
+    else:
+        click.echo(click.style("This supplier has not products or does not exist.", fg='red'))
 
 
 '''----------------------- P R O D U C T S -------------------------'''
@@ -209,15 +230,18 @@ def view_supplier_products(search_supplier):
 @mycommands.command()
 @click.option('--name', '-pn', default=None, type=str, help="Search for a product by name")
 def view_product_details(name):
+    '''View product details'''
     if name is None:
         for product in session.query(Product):
-            click.echo(
-                f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+            click.echo(click.style(f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}', fg='yellow')
+                )
     else:
         product = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
         if product:
-            click.echo(
-                f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}')
+            click.echo(click.style(
+                f'({product.id}): Name:{product.name}, Price:{product.price} | Quantity:{product.quantity} | Category:{product.category.name} | Product:{product.supplier.name}',
+                fg='yellow')
+                       )
         else:
             click.echo(click.style("Product you searched for does not exist.", fg='red', bold=True))
 
@@ -229,6 +253,7 @@ def view_product_details(name):
 @click.option('--price', '-p', prompt="Enter the price", type=float)
 @click.option('--quantity', '-q', prompt="Enter the quantity", type=int)
 def add_product(name, category, supplier, price, quantity):
+    '''Add a new product'''
     category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
     supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
     click.echo(category_record)
@@ -245,19 +270,20 @@ def add_product(name, category, supplier, price, quantity):
         session.commit()
         click.echo(click.style("------------- NEW PRODUCT ADDED SUCCESSFULLY -------------!", fg='green', bold=True))
     else:
-        click.echo(click.style("Sorry! Category or Supplier you entered does not exist.",fg='green', bold=True))
+        click.echo(click.style("Sorry! Category or Supplier you entered does not exist.",fg='red', bold=True))
 
 
 @mycommands.command()
 @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
 def delete_product(name):
+    '''delete an existing product'''
     product_to_delete = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
     if product_to_delete:
         session.delete(product_to_delete)
         session.commit()
         click.echo(click.style("------------- PRODUCT HAS BEEN SUCCESSFULLY DELETED ------------", fg='green', bold=True))
     else:
-        click.echo(click.style("Error! No such product exists.", fg='green', bold=True))
+        click.echo(click.style("Error! No such product exists.", fg='red', bold=True))
 
 
 product_details = ("name", "price", "quantity", "category", "supplier")
@@ -266,44 +292,46 @@ product_details = ("name", "price", "quantity", "category", "supplier")
 @click.option('--choice', '-n', prompt="What would you like to update? Select", type=click.Choice(product_details))
 @click.option('--name', '-n', prompt="What product would you like to update? (name)")
 def update_product(choice, name):
+    '''Update an existing product'''
     product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
     update_data = {}
     if product_to_update:
         click.echo(f"{product_to_update}")
         if choice.lower() == 'name':
-            new_name = click.prompt("Enter the new name")
+            new_name = click.prompt(click.style("Enter the new name",fg='cyan'))
             update_data['name'] = f'P-{new_name}'
         if choice.lower() == 'price':
-            new_price = click.prompt("Enter the new price")
+            new_price = click.prompt(click.style("Enter the new price",fg='cyan'))
             update_data['price'] = new_price
         if choice.lower() == 'quantity':
-            new_quantity = click.prompt("Enter the new quantity")
+            new_quantity = click.prompt(click.style("Enter the new quantity",fg='cyan'))
             update_data['quantity'] = new_quantity
 
         # update foreign key values
         if choice.lower() == 'supplier':
-            update_to_supplier = click.prompt("Enter the new supplier")
+            update_to_supplier = click.prompt(click.style("Enter the new supplier",fg='cyan'))
             supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{update_to_supplier}%')).first()
             if supplier_record:
                 update_data['supplier_id'] = supplier_record.id
             else:
                 click.echo(
-                    click.style("Entered supplier does not exist. View existing products using the 'view-suppliers' command.", fg='red', bold=True))
+                    click.style("Error! Entered supplier does not exist. View existing products using the 'view-suppliers' command.", fg='red', bold=True))
         if choice.lower() == 'category':
-            update_to_category = click.prompt("Enter the new category")
+            update_to_category = click.prompt(click.style("Enter the new category",fg='cyan'))
             category_record = session.query(Category).filter(Category.name.like(f'%{update_to_category}%')).first()
             if category_record:
                 update_data['category_id'] = category_record.id
             else:
                 click.echo(
-                    click.style("Entered category does not exist. View existing categories using the 'view-categories' command.", fg='red', bold=True))
+                    click.style("ERROR! Entered category does not exist. View existing categories using the 'view-categories' command.", fg='red', bold=True))
         print(update_data)
         session.query(Product).filter_by(id=product_to_update.id).update(update_data)
         session.commit()
         click.echo(click.style("----------- PRODUCT IS SUCCESSFULLY UPDATED --------------", bg='green', bold=True))
     else:
-        click.echo(
-            "Sorry! That product does not exist and cannot be updated. View existing products using the 'view-product-details' command.")
+        click.echo(click.style("ERROR! That product does not exist and cannot be updated. View existing products using the 'view-product-details' command.", fg='red', bold=True)
+            )
+
 
 
 @mycommands.command()
@@ -311,6 +339,7 @@ def update_product(choice, name):
 @click.option('--product_name', '-pn', prompt="Product to be purchased? (name)")
 @click.option('--quantity', '-pn', type=int, prompt="Quantity purchased?")
 def add_purchase(customer_name, product_name, quantity):
+    '''Add a new purchase'''
     customer = session.query(Customer).filter(Customer.full_name.like(f'%{customer_name}%')).first()
     product = session.query(Product).filter(Product.name.like(f'%{product_name}%')).first()
 
@@ -356,6 +385,7 @@ def add_purchase(customer_name, product_name, quantity):
 @mycommands.command()
 @click.option('--name', '-f', prompt="Name of customer")
 def view_customer_purchase_details(name):
+    '''View customer purchases'''
     customer = session.query(Customer).filter(Customer.full_name.like(f'%{name}%')).first()
     if customer:
         for purchase in customer.purchases:
@@ -367,6 +397,7 @@ def view_customer_purchase_details(name):
 @mycommands.command()
 @click.option('--name', '-f', prompt="Name of product")
 def view_product_purchase_details(name):
+    '''View product purchases'''
     product = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
     if product:
         for purchase in product.purchases:
