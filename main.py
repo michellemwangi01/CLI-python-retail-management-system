@@ -1,45 +1,47 @@
 from models import *
 import click
 
+
 # _------------------------------ Create Command Groups ------------------------
 @click.group()
 def mycommands():
     pass
 
 
-@click.group(name='inventory', help="Inventory Management Commands")
-def inventory_group():
-    pass
-
-
-@click.group(name='customer', help="Customer Management Commands")
-def customer_group():
-    pass
-
-
-@click.group(name='supplier', help="Supplier Management Commands")
-def supplier_group():
-    pass
-
-
-@click.group(name='product', help="Product Management Commands")
-def product_group():
-    pass
+# @mycommandss.group(name='inventory', help="Inventory Management Commands")
+# def inventory_group():
+#     pass
+#
+#
+# @mycommandss.group(name='customer', help="Customer Management Commands")
+# def customer_group():
+#     pass
+#
+#
+# @mycommandss.group(name='supplier', help="Supplier Management Commands")
+# def supplier_group():
+#     pass
+#
+#
+# @mycommandss.group(name='product', help="Product Management Commands")
+# def product_group():
+#     pass
 
 
 categories = session.query(Category).all()
 suppliers = session.query(Supplier).all()
 products = session.query(Product).all()
+# _------------------------------ Create Commands ------------------------
 
 '''----------------------- C A T E G O R I E S ______________________--'''
 
 
-@inventory_group.command()
+@mycommands.command()
 def view_categories():
     click.echo(session.query(Category).all())
 
 
-@inventory_group.command()
+@mycommands.command()
 @click.option('--name', '-n', prompt="Enter the category name")
 def new_category(name):
     if name not in categories:
@@ -53,7 +55,7 @@ def new_category(name):
         click.echo(f"Category '{name}' already exists.")
 
 
-@inventory_group.command()
+@mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the category name to update")
 @click.option('--new_name', '-nn', prompt="Enter the name to be updated to")
 def update_category(search_name, new_name):
@@ -69,7 +71,7 @@ def update_category(search_name, new_name):
         click.echo("Sorry! That category does not exist and cannot be updated.")
 
 
-@inventory_group.command()
+@mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the category name to delete")
 def delete_category(search_name):
     category_to_delete = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
@@ -82,7 +84,7 @@ def delete_category(search_name):
         click.echo("Sorry! That category does not exist and cannot be deleted.")
 
 
-@inventory_group.command()
+@mycommands.command()
 @click.option('--category_name', '--cn', prompt="Enter the category to filter by")
 def view_category_products(category_name):
     click.echo(
@@ -92,12 +94,12 @@ def view_category_products(category_name):
 '''----------------------- S U P P L I E R -------------------------'''
 
 
-@supplier_group.command()
+@mycommands.command()
 def view_suppliers():
     click.echo(session.query(Supplier).all())
 
 
-@supplier_group.command()
+@mycommands.command()
 @click.option('--name', '-n', prompt="Enter the supplier name")
 def new_supplier(name):
     if name.lower() not in [supplier.name.lower() for supplier in suppliers]:
@@ -111,7 +113,7 @@ def new_supplier(name):
         click.echo(f"Supplier '{name}' already exists.")
 
 
-@supplier_group.command()
+@mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the supplier name to update")
 @click.option('--new_name', '-nn', prompt="Enter the supplier name to update to")
 def update_supplier(search_name, new_name):
@@ -127,7 +129,7 @@ def update_supplier(search_name, new_name):
         click.echo("Sorry! That supplier does not exist and cannot be updated.")
 
 
-@supplier_group.command()
+@mycommands.command()
 @click.option('--search_name', '-sn', prompt="Enter the category name to delete")
 def delete_supplier(search_name):
     supplier_to_delete = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
@@ -140,7 +142,7 @@ def delete_supplier(search_name):
         click.echo("Sorry! That supplier does not exist and cannot be deleted.")
 
 
-@supplier_group.command()
+@mycommands.command()
 @click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
 def view_supplier_products(search_supplier):
     click.echo(
@@ -150,7 +152,7 @@ def view_supplier_products(search_supplier):
 '''----------------------- P R O D U C T S -------------------------'''
 
 
-@product_group.command()
+@mycommands.command()
 @click.option('--name', '-pn', default=None, type=str, help="Search for a product by name")
 def view_product_details(name):
     if name is None:
@@ -166,7 +168,7 @@ def view_product_details(name):
             click.echo("Product you searched fo does not exist.")
 
 
-@inventory_group.command()
+@mycommands.command()
 @click.option('--name', '-n', prompt="Enter the product name", type=str)
 @click.option('--category', '-c', prompt="Enter the category", type=str)
 @click.option('--supplier', '-s', prompt="Enter the supplier name", type=str)
@@ -192,7 +194,7 @@ def add_product(name, category, supplier, price, quantity):
         click.echo("Sorry! Category or Supplier you entered does not exist.")
 
 
-@product_group.command()
+@mycommands.command()
 @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
 def delete_product(name):
     product_to_delete = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
@@ -211,9 +213,16 @@ product_details = {
     "category": "category",
     "supplier": "supplier",
 }
+table_options = {
+    "products": Product,
+    "categories": Category,
+    "suppliers": Supplier,
+    "customers": Customer,
+    "purchases": Purchase
+}
 
 
-@product_group.command()
+@mycommands.command()
 @click.option('--choice', '-n', prompt="What would you like to update? Select", type=click.Choice(product_details))
 @click.option('--name', '-n', prompt="What product would you like to update? (name)")
 def update_product(choice, name):
@@ -257,11 +266,94 @@ def update_product(choice, name):
             "Sorry! That product does not exist and cannot be updated. View existing products using the 'view-product-details' command.")
 
 
-mycommands.add_command(inventory_group)
-mycommands.add_command(product_group)
-mycommands.add_command(supplier_group)
-mycommands.add_command(customer_group)
+@mycommands.command()
+@click.option('--customer_name', '-cn', prompt="Customer who purchased the product? (name)")
+@click.option('--product_name', '-pn', prompt="Product to be purchased? (name)")
+@click.option('--quantity', '-pn', prompt="Quantity purchased?")
+def add_purchase(customer_name, product_name, quantity):
+    customer = session.query(Customer).filter(Customer.full_name.like(f'%{customer_name}%')).first()
+    product = session.query(Product).filter(Product.name.like(f'%{product_name}%')).first()
+
+    if customer and product:
+        existing_purchase = session.query(Purchase).filter(
+            Purchase.customer_id == customer.id,
+            Purchase.product_id == product.id
+        )
+        if existing_purchase:
+            session.query(Purchase).filter(
+                Purchase.customer_id == customer.id,
+                Purchase.product_id == product.id
+            ).update({
+                Purchase.quantity: Purchase.quantity+quantity
+            })
+            session.commit()
+            click.echo("----- This purchase already exists in the database. The quantity was updated.-----")
+        else:
+            new_purchase = Purchase(
+                customer_id=customer.id,
+                product_id=product.id,
+                quantity=quantity
+            )
+            session.add(new_purchase)
+            session.commit()
+            click.echo("----------- PURCHASE SUCCESSFULLY ADDED ------------")
+    else:
+        click.echo("ERROR! Product or Customer you entered does not exist")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @mycommands.command()
+# @click.option('--choice', '-n', prompt="Table to delete from? Select", type=click.Choice(table_options))
+# @click.option('--name', '-n', prompt="Record from the table to delete (name)")
+# def delete_records(choice, name):
+#     print(choice, name)
+#     record_to_delete = session.query(table_options[choice]).filter(table_options[choice].name.like(f'%{name.title()}%')).first()
+#     print(record_to_delete)
+#     if record_to_delete:
+#         session.delete(record_to_delete)
+#         session.commit()
+#         click.echo("Product has been successfully deleted")
+#     else:
+#         click.echo("Error! No such product exists.")
+
 
 if __name__ == '__main__':
-    # Invoke mycommands() method which calls all the commands
+    # Invoke mycommandss() method which calls all the commands
     mycommands()

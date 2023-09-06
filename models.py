@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func
-from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+import datetime
 
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func, Table, DateTime
+from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
 engine = create_engine('sqlite:///retail_store_management.db')
 Session = sessionmaker(bind=engine)
@@ -9,16 +11,41 @@ session = Session()
 Base = declarative_base()
 
 
-class Category(Base):
-    __tablename__ = 'categories'
+class Purchase(Base):
+    __tablename__ = 'purchases'
 
     id = Column(Integer(), primary_key=True)
-    name = Column(String())
+    customer_id = Column(Integer(), ForeignKey('customers.id'), nullable=False)
+    product_id = Column(Integer(), ForeignKey('products.id'), nullable=False)
+    quantity = Column(Integer())
+    purchase_date = Column(DateTime(), server_default=func.now())
 
-    products = relationship('Product', back_populates='category', cascade='all, delete-orphan')
+    # create class relationships as attributes
+    customer = relationship('Customer', back_populates='purchases')
+    product = relationship('Product', back_populates='purchases')
 
     def __repr__(self):
-        return f'({self.id}) {self.name}\n'
+        return f'({self.id}) {self.customer_id} {self.product_id} {self.quantity} {self.purchase_date}'
+
+
+class Customer(Base):
+    __tablename__ = 'customers'
+
+    id = Column(Integer(), primary_key=True)
+    first_name = Column(String())
+    last_name = Column(String())
+    full_name = Column(String(), default=lambda c: f'{c.first_name} {c.last_name}')
+
+    purchases = relationship('Purchase', back_populates='customer')
+    products = association_proxy("purchases", "product")
+
+    @property
+    def full_names(self):
+        return f'{self.last_name}, {self.first_name}'
+
+
+    def __repr__(self):
+        return f'({self.id}) {self.full_name}'
 
 
 class Product(Base):
@@ -34,6 +61,10 @@ class Product(Base):
     category = relationship('Category', back_populates='products')
     supplier = relationship('Supplier', back_populates='products')
 
+    purchases = relationship('Purchase', back_populates='product')
+    customers = association_proxy('purchases', 'customer')
+
+
     def __repr__(self):
         return f'({self.id}): Name:{self.name}, Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Product:{self.supplier.name}'
 
@@ -45,6 +76,18 @@ class Supplier(Base):
     name = Column(String())
 
     products = relationship('Product', back_populates='supplier', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'({self.id}) {self.name}\n'
+
+
+class Category(Base):
+    __tablename__ = 'categories'
+
+    id = Column(Integer(), primary_key=True)
+    name = Column(String())
+
+    products = relationship('Product', back_populates='category', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'({self.id}) {self.name}\n'
