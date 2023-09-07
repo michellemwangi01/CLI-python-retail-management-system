@@ -32,7 +32,7 @@ class Customer(Base):
 
     @property
     def full_names(self):
-        return f'{self.last_name}, {self.first_name}'
+        return f'{self.last_name}, {self.first_name}\n'
 
 
     def __repr__(self):
