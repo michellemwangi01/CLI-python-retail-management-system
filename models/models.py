@@ -32,11 +32,11 @@ class Customer(Base):
 
     @property
     def full_names(self):
-        return f'{self.last_name}, {self.first_name}\n'
+        return f'{self.first_name} {self.last_name}'
 
 
     def __repr__(self):
-        return f'({self.id}) {self.full_name}'
+        return f'({self.id}) {self.full_name} - Loyalty Points: {self.loyalty_points}'
 
 
 class Product(Base):

@@ -53,3 +53,20 @@ def update_customer():
         click.echo(click.style("------------ CUSTOMER NAME SUCCESSFULLY UPDATED -------------", fg='green', bold=True))
     else:
         click.echo(click.style("Selected customer does not exist and cannot be updated.", bold=True, fg='red'))
+
+@customer_management_group.command()
+def view_customer_details():
+    """-View all details of a customer"""
+    customer_view_choice = click.prompt(click.style("Would you like to view all users or a specific user?\n1. All customers\n2.Specific customer\nSelect", fg='cyan'),type=int)
+    if customer_view_choice == 1:
+        customers = session.query(Customer).all()
+        for customer in customers:
+            click.echo(click.style(customer, fg='yellow'))
+    if customer_view_choice == 2:
+        customer_name = click.prompt(click.style("Enter name of customer", fg='cyan'))
+        customer = session.query(Customer).filter(Customer.full_name.like(f"%{customer_name}%")).first()
+        if customer:
+            click.echo(click.style(customer, fg='yellow'))
+        else:
+            click.echo(click.style('Customer not found!', fg='yellow'))
+
