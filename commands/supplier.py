@@ -50,10 +50,13 @@ def update_supplier():
 
 
 @supplier_management_group.command('')
-@click.option('--search_name', '-sn', prompt="Enter the supplier name to delete")
-def delete_supplier(search_name):
+def delete_supplier():
     '''Delete an existing supplier'''
-    supplier_to_delete = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
+    click.echo(click.style(f'{session.query(Supplier).all()}', fg='yellow'))
+    supplier_id_to_delete = click.prompt(
+        click.style("Choose a number above to select the supplier to delete", fg='cyan'), type=int)
+    supplier_to_delete = session.query(Supplier).filter_by(id=supplier_id_to_delete).first()
+    click.echo(supplier_to_delete)
     if supplier_to_delete:
         confirmation = click.prompt(click.style(
             "To complete delete, related product records will be updated to a different supplier via auto-assign or selected supplier. Continue? Y/N",

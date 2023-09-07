@@ -6,19 +6,20 @@ from models.models import *
 def customer_management_group():
     pass
 
+
 @customer_management_group.command()
 @click.option('--first_name', '-fn', prompt="First name")
 @click.option('--last_name', '-ln', prompt="Last name")
 def add_customer(first_name, last_name):
-    """Add a new customer to customer table"""
+    """-Add a new customer to customer table"""
     customers = [customer.full_name.lower() for customer in session.query(Customer).all()]
     new_customer_fullname = f'{first_name.lower()} {last_name.lower()}'
     if new_customer_fullname not in customers:
         new_customer = Customer(
-            first_name= first_name,
+            first_name=first_name,
             last_name=last_name,
-            full_name= f'{first_name} {last_name}',
-            loyalty_points = 0
+            full_name=f'{first_name} {last_name}',
+            loyalty_points=0
         )
         session.add(new_customer)
         session.commit()
@@ -30,7 +31,7 @@ def add_customer(first_name, last_name):
 
 @customer_management_group.command()
 def update_customer():
-    '''update an existing customer record'''
+    """-Update an existing customer record"""
     click.echo(click.style(f'{session.query(Customer).all()}', fg='yellow'))
     customer_id_to_update = click.prompt(
         click.style("Enter a number above to select the customer to update", fg='cyan'), type=int)
@@ -54,10 +55,13 @@ def update_customer():
     else:
         click.echo(click.style("Selected customer does not exist and cannot be updated.", bold=True, fg='red'))
 
+
 @customer_management_group.command()
 def view_customer_details():
     """-View all details of a customer"""
-    customer_view_choice = click.prompt(click.style("Would you like to view all users or a specific user?\n1. All customers\n2.Specific customer\nSelect", fg='cyan'),type=int)
+    customer_view_choice = click.prompt(click.style(
+        "Would you like to view all users or a specific user?\n1. All customers\n2.Specific customer\nSelect",
+        fg='cyan'), type=int)
     if customer_view_choice == 1:
         customers = session.query(Customer).all()
         for customer in customers:
@@ -70,3 +74,25 @@ def view_customer_details():
         else:
             click.echo(click.style('Customer not found!', fg='yellow'))
 
+
+@customer_management_group.command()
+def delete_customer():
+    """-Delete an existing customer record"""
+    click.echo(click.style(f'{session.query(Customer).all()}', fg='yellow'))
+    customer_id_to_delete = click.prompt(
+        click.style("Enter a number above to select the customer to delete", fg='cyan'), type=int)
+    customer_to_delete = session.query(Customer).filter_by(id=customer_id_to_delete).first()
+    print(customer_to_delete)
+
+    if customer_to_delete:
+        confirmation = click.prompt(click.style(
+            "Please note that deleting a customer will cause related records in the 'purchases' table to be deleted as well. Continue? Y/N",
+            fg='cyan'))
+        if confirmation.lower() == 'y':
+            session.delete(customer_to_delete)
+            session.commit()
+            click.echo(
+                click.style("------------------- CUSTOMER SUCCESSFULLY DELETED ---------------------", fg='green',
+                            bold=True))
+        if confirmation.lower() == 'n':
+            click.echo("Delete Action Aborted!")

@@ -27,7 +27,7 @@ class Customer(Base):
     full_name = Column(String(), default=lambda c: f'{c.first_name} {c.last_name}')
     loyalty_points = Column(Integer())
 
-    purchases = relationship('Purchase', back_populates='customer')
+    purchases = relationship('Purchase', back_populates='customer', cascade='all, delete-orphan')
     products = association_proxy("purchases", "product")
 
     @property
