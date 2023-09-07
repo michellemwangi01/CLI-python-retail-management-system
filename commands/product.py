@@ -1,7 +1,6 @@
 import click
 from models.models import *
 
-
 '''----------------------- P R O D U C T S -------------------------'''
 
 
@@ -11,12 +10,16 @@ def product_management_group():
 
 
 @product_management_group.command()
-@click.option('--category_name', '--cn', prompt="Enter the category to filter by")
-def view_category_products(category_name):
-    '''View the all the products of specific category'''
+# @click.option('--category_name', '--cn', prompt="Enter the category to filter by")
+def view_category_products():
+    """-View the all the products of specific category"""
+    click.echo(click.style(f'{session.query(Category).all()}', fg='yellow'))
+    category_id = click.prompt(
+        click.style("Enter a number above to select the category", fg='cyan'), type=int)
     category_products = session.query(Product).join(Category.products).filter(
-        Category.name.like(f'%{category_name}%')).all()
+        Category.id == category_id).all()
     if category_products:
+        click.echo(f"Products in category {session.query(Category).filter_by(id=category_id).first()} are:")
         for category_product in category_products:
             click.echo(click.style(f'{category_product}\n', fg='yellow'))
     else:
@@ -24,22 +27,26 @@ def view_category_products(category_name):
 
 
 @product_management_group.command()
-@click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
-def view_supplier_products(search_supplier):
-    '''View supplier products'''
-    supplier_products = session.query(Product).join(Product.supplier).filter(
-        Supplier.name.like(f'%{search_supplier}%')).all()
+# @click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
+def view_supplier_products():
+    """-View supplier products"""
+    click.echo(click.style(f'{session.query(Supplier).all()}', fg='yellow'))
+    supplier_id = click.prompt(
+        click.style("Enter a number above to select the supplier", fg='cyan'), type=int)
+    supplier_products = session.query(Product).join(Supplier.products).filter(
+        Supplier.id == supplier_id).all()
     if supplier_products:
+        click.echo(f"Products supplied by {session.query(Category).filter_by(id=supplier_id).first()} are:")
         for supplier_product in supplier_products:
             click.echo(click.style(f'{supplier_product}', fg='yellow'))
     else:
-        click.echo(click.style("This supplier has not products or does not exist.", fg='red'))
+        click.echo(click.style("This supplier has no products or does not exist.", fg='red'))
 
 
 @product_management_group.command()
 @click.option('--name', '-pn', default=None, type=str, help="Search for a product by name")
 def view_product_details(name):
-    '''View product details'''
+    """-View product details"""
     if name is None:
         for product in session.query(Product):
             click.echo(click.style(
@@ -58,27 +65,33 @@ def view_product_details(name):
 
 
 @product_management_group.command()
-@click.option('--name', '-n', prompt="Enter the product name", type=str)
-@click.option('--category', '-c', prompt="Enter the category", type=str)
-@click.option('--supplier', '-s', prompt="Enter the supplier name", type=str)
-@click.option('--price', '-p', prompt="Enter the price", type=float)
-@click.option('--quantity', '-q', prompt="Enter the quantity", type=int)
-def add_product(name, category, supplier, price, quantity):
-    '''Add a new product'''
-    category_record = session.query(Category).filter(Category.name.like(f'%{category}%')).first()
-    supplier_record = session.query(Supplier).filter(Supplier.name.like(f'%{supplier}%')).first()
-    click.echo(category_record)
-    click.echo(supplier_record)
+# @click.option('--name', '-n', prompt="Enter the product name", type=str)
+# @click.option('--price', '-p', prompt="Enter the price", type=float)
+# @click.option('--quantity', '-q', prompt="Enter the quantity", type=int)
+def add_product():
+    """-Add a new product"""
+    new_product_name = click.prompt(click.style("Product name",fg='cyan'))
+    new_product_price = click.prompt(click.style("Product price",fg='cyan'))
+    new_product_quantity = click.prompt(click.style("Product quantity",fg='cyan'))
+    click.echo(click.style(f'{session.query(Category).all()}', fg='yellow'))
+    category_id = click.prompt(
+        click.style("Enter a number above to select a category", fg='cyan'), type=int)
+    click.echo(click.style(f'{session.query(Supplier).all()}', fg='yellow'))
+    supplier_id = click.prompt(
+        click.style("Enter a number above to select a supplier", fg='cyan'), type=int)
+    category_record = session.query(Category).filter_by(id=category_id).first()
+    supplier_record = session.query(Supplier).filter_by(id=supplier_id).first()
     if category_record and supplier_record:
         new_product = Product(
-            name=f'P-{name}',
+            name=new_product_name,
             supplier_id=supplier_record.id,
             category_id=category_record.id,
-            price=price,
-            quantity=quantity,
+            price=new_product_price,
+            quantity=new_product_quantity,
         )
         session.add(new_product)
         session.commit()
+        click.echo(f'You have added the product: {new_product}')
         click.echo(click.style("------------- NEW PRODUCT ADDED SUCCESSFULLY -------------!", fg='green', bold=True))
     else:
         click.echo(click.style("Sorry! Category or Supplier you entered does not exist.", fg='red', bold=True))
@@ -87,7 +100,7 @@ def add_product(name, category, supplier, price, quantity):
 @product_management_group.command()
 @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
 def delete_product(name):
-    '''delete an existing product'''
+    """-Delete an existing product"""
     product_to_delete = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
     if product_to_delete:
         session.delete(product_to_delete)
@@ -105,7 +118,7 @@ product_details = ("name", "price", "quantity", "category", "supplier")
 @click.option('--choice', '-n', prompt="What would you like to update? Select", type=click.Choice(product_details))
 @click.option('--name', '-n', prompt="What product would you like to update? (name)")
 def update_product(choice, name):
-    '''Update an existing product'''
+    """-Update an existing product"""
     product_to_update = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
     update_data = {}
     if product_to_update:

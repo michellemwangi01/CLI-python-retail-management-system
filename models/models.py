@@ -57,7 +57,7 @@ class Product(Base):
 
 
     def __repr__(self):
-        return f'({self.id}): Name:{self.name}, Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Product:{self.supplier.name}'
+        return f'({self.id}): Name:{self.name} | Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Supplier:{self.supplier.name}'
 
 
 class Supplier(Base):

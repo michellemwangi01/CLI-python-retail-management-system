@@ -6,7 +6,8 @@ import random
 fake = Faker()
 
 categories = ["Fresh Produce", "Dairy Products", "Bakery Items", "Meat and Poultry", "Seafood", "Canned Goods",
-              "Frozen Foods", "Snack Foods", "Beverages", "Condiments and Sauces", "Cereal and Breakfast Foods",
+              "Frozen Foods", "Snack Foods", "Beverages", "Condiments and Sauces"]
+categories2 = ["Cereal and Breakfast Foods",
               "Pasta and Rice", "Canned and Dried Beans", "Personal Care Products", "Cleaning Supplies",
               "Paper Products",
               "Health and Wellness", "Pet Supplies", "Household Goods", "Baby Care Products"]
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     '''----------------------- C A T E G O R I E S ______________________--'''
     for item in categories:
         new_category = Category(
-            name=f'C-{item}'
+            name=f'{item}'
         )
         session.add(new_category)
         session.commit()
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     '''----------------------- S U P P L I E R S ______________________--'''
     for item in suppliers:
         new_supplier = Supplier(
-            name=f'S-{item}'
+            name=f'{item}'
         )
         session.add(new_supplier)
         session.commit()
@@ -47,7 +48,7 @@ if __name__ == '__main__':
             supplier = session.query(Supplier).order_by(func.random()).first()
             category = session.query(Category).order_by(func.random()).first()
             new_product = Product(
-                name=f'P-{fake.name()}',
+                name=f'{fake.name()}',
                 price=round(random.uniform(100, 1000), 2),
                 quantity=random.randint(0, 50),
                 supplier_id=supplier.id,
