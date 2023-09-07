@@ -8,13 +8,39 @@ fake = Faker()
 categories = ["Fresh Produce", "Dairy Products", "Bakery Items", "Meat and Poultry", "Seafood", "Canned Goods",
               "Frozen Foods", "Snack Foods", "Beverages", "Condiments and Sauces"]
 categories2 = ["Cereal and Breakfast Foods",
-              "Pasta and Rice", "Canned and Dried Beans", "Personal Care Products", "Cleaning Supplies",
-              "Paper Products",
-              "Health and Wellness", "Pet Supplies", "Household Goods", "Baby Care Products"]
+               "Pasta and Rice", "Canned and Dried Beans", "Personal Care Products", "Cleaning Supplies",
+               "Paper Products",
+               "Health and Wellness", "Pet Supplies", "Household Goods", "Baby Care Products"]
 suppliers = ["GreenGrocer Suppliers", "FreshHarvest Foods", "QualityProvisions Co.", "PantryMaster Distributors",
              "FarmToTable Supplies", "Gourmet Essentials Ltd.", "PrimeGrocery Suppliers", "MegaMart Wholesalers",
              "EpicProduce Distributors", "PremiumPantry Imports"]
 user_roles = ['Employee', 'Customer']
+sample_products = [
+    "Bread",
+    "Milk",
+    "Eggs",
+    "Fresh Vegetables (e.g., lettuce, tomatoes, carrots)",
+    "Fresh Fruits (e.g., apples, bananas, oranges)",
+    "Rice",
+    "Pasta",
+    "Canned Soup",
+    "Cereal",
+    "Cheese",
+    "Yogurt",
+    "Ground Beef",
+    "Chicken Breast",
+    "Pork Chops",
+    "Butter",
+    "Frozen Pizza",
+    "Canned Tuna",
+    "Peanut Butter",
+    "Jelly or Jam",
+    "Breakfast Cereal",
+    "Bottled Water",
+    "Soft Drinks",
+    "Snack Chips",
+    "Laundry Detergent",
+    "Toilet Paper"]
 
 if __name__ == '__main__':
 
@@ -45,20 +71,19 @@ if __name__ == '__main__':
 
     '''----------------------- P R O D U C T S ______________________--'''
     products = []
-    for item in categories:
-        for i in range(random.randint(1, 10)):
-            supplier = session.query(Supplier).order_by(func.random()).first()
-            category = session.query(Category).order_by(func.random()).first()
-            new_product = Product(
-                name=f'{fake.name()}',
-                price=round(random.uniform(100, 1000), 2),
-                quantity=random.randint(0, 50),
-                supplier_id=supplier.id,
-                category_id=category.id,
-            )
-            session.add(new_product)
-            session.commit()
-            products.append(new_product)
+    for item in sample_products:
+        supplier = session.query(Supplier).order_by(func.random()).first()
+        category = session.query(Category).order_by(func.random()).first()
+        new_product = Product(
+            name=item,
+            price=round(random.uniform(100, 1000), 2),
+            quantity=random.randint(0, 50),
+            supplier_id=supplier.id,
+            category_id=category.id,
+        )
+        session.add(new_product)
+        session.commit()
+        products.append(new_product)
     session.close()
 
     print("Products import complete.")
@@ -75,8 +100,18 @@ if __name__ == '__main__':
         )
         session.add(new_customer)
         session.commit()
+        new_user = User(
+            username=f'{new_customer.first_name}.{new_customer.last_name}',
+            password=fake.unique.word(),
+            role=random.choice(['customer', 'employee']),
+            customer_id=new_customer.id
+        )
+        session.add(new_user)
+        session.commit()
+        customers.append(new_user)
         customers.append(new_customer)
     print("Customer import complete.")
+    print("User import complete.")
 
     '''----------------------- P U R C H A S E S ______________________--'''
     purchases = []
@@ -94,16 +129,16 @@ if __name__ == '__main__':
     print("Purchases import complete.")
 
     '''----------------------- U S E R S ______________________--'''
-    users = []
-    for num in range(1, 5):
-        username = f'{fake.first_name()}.{fake.first_name()}'
-        new_user = User(
-            username = f'{fake.first_name()}.{fake.first_name()}',
-            password= fake.unique.word(),
-            role= random.choice(user_roles)
-        )
-        session.add(new_user)
-        session.commit()
-        customers.append(new_user)
-    print("User import complete.")
-
+    # users = []
+    # for num in range(1, 5):
+    #     username = f'{fake.first_name()}.{fake.first_name()}'
+    #     new_user = User(
+    #         username = f'{fake.first_name()}.{fake.first_name()}',
+    #         password= fake.unique.word(),
+    #         role= 'Employee'
+    #
+    #     )
+    #     session.add(new_user)
+    #     session.commit()
+    #     customers.append(new_user)
+    # print("User import complete.")

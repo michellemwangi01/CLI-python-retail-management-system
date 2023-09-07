@@ -24,6 +24,15 @@ def add_customer(first_name, last_name):
         )
         session.add(new_customer)
         session.commit()
+        new_user = User(
+            username=f'{new_customer.first_name}.{new_customer.last_name}',
+            role='customer',
+            password='password',
+            customer_id=new_customer.id
+        )
+        session.add(new_user)
+        session.commit()
+        click.echo(click.style(f'New customer details: {new_customer}', fg='green'))
         click.echo(click.style("----------- CUSTOMER SUCCESSFULLY ADDED -----------", fg='green'))
 
     else:
@@ -32,6 +41,7 @@ def add_customer(first_name, last_name):
 
 @customer_management_group.command()
 def update_customer():
+    """-Update a customer record"""
     current_user = login()
     if current_user.role == 'Employee':
         """-Update an existing customer record"""
@@ -54,16 +64,17 @@ def update_customer():
             session.query(Customer).filter_by(id=customer_to_update.id).update(update_data)
             session.commit()
 
-            click.echo(click.style("------------ CUSTOMER NAME SUCCESSFULLY UPDATED -------------", fg='green', bold=True))
+            click.echo(
+                click.style("------------ CUSTOMER NAME SUCCESSFULLY UPDATED -------------", fg='green', bold=True))
         else:
             click.echo(click.style("Selected customer does not exist and cannot be updated.", bold=True, fg='red'))
     else:
         click.echo(click.style("Sorry! You do not have permissions to access perform this action", fg='red'))
 
 
-
 @customer_management_group.command()
 def view_customer_details():
+    """-View customer details"""
     current_user = login()
     if current_user.role == 'Employee':
         """-View all details of a customer"""
@@ -90,6 +101,7 @@ def delete_customer():
     """-Delete an existing customer record"""
     current_user = login()
     if current_user.role == 'Employee':
+        click.echo(click.style("Authorization Approved", fg='green'))
         click.echo(click.style(f'{session.query(Customer).all()}', fg='yellow'))
         customer_id_to_delete = click.prompt(
             click.style("Enter a number above to select the customer to delete", fg='cyan'), type=int)
@@ -110,6 +122,7 @@ def delete_customer():
                 click.echo("Delete Action Aborted!")
     else:
         click.echo(click.style("Sorry! You do not have permissions to access perform this action", fg='red'))
+
 
 def update_loyalty_points():
     pass

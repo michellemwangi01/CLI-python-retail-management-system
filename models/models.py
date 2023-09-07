@@ -88,6 +88,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer(), primary_key=True)
+    customer_id = Column(Integer(), ForeignKey('customers.id'))
     username = Column(String())
     password = Column(String())
     role = Column(String())
