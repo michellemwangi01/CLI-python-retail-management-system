@@ -1,6 +1,6 @@
 import click
 from models.models import *
-from commands.user import login
+from commands.user_login import login
 
 
 @click.group(name='customer', help='--Customer management commands')

@@ -10,12 +10,10 @@ def login():
     user_record = session.query(User).filter(User.username.like(f'%{username}%')).first()
     if user_record and user_record.password == password:
         current_user = user_record
-        click.echo(click.style(f'Logged in as {user_record.username}'))
-        click.echo(click.style(f'------- LOGIN SUCCESSFUL --------', fg='green'))
+        click.echo(click.style(f'Logged in successfully as {user_record.username}'))
+        # click.echo(click.style(f'------- LOGIN SUCCESSFUL --------', fg='green'))
         return current_user
     else:
-        click.echo('Login failed. Please check your credentials.')
-
-
-
+        click.echo(click.style('Login failed. Please check your credentials.', fg='red'))
+        return
 

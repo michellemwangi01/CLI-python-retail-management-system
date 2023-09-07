@@ -8,6 +8,7 @@ class Purchase(Base):
     customer_id = Column(Integer(), ForeignKey('customers.id'), nullable=False)
     product_id = Column(Integer(), ForeignKey('products.id'), nullable=False)
     quantity = Column(Integer())
+    total_amount = Column(Integer())
     purchase_date = Column(DateTime(), server_default=func.now())
 
     # create class relationships as attributes
@@ -25,7 +26,7 @@ class Customer(Base):
     first_name = Column(String())
     last_name = Column(String())
     full_name = Column(String(), default=lambda c: f'{c.first_name} {c.last_name}')
-    loyalty_points = Column(Integer())
+    loyalty_points = Column(Integer(), default=0)
 
     purchases = relationship('Purchase', back_populates='customer', cascade='all, delete-orphan')
     products = association_proxy("purchases", "product")
@@ -94,6 +95,6 @@ class User(Base):
     role = Column(String())
 
     def __repr__(self):
-        return f'({self.id}) {self.username} Role:{self.role}\n'
+        return f'({self.id}) {self.username} | Role:{self.role}\n'
 
 

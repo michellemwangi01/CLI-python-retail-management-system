@@ -4,7 +4,7 @@ from commands.inventory import inventory_management_group
 from commands.supplier import supplier_management_group
 from commands.product import product_management_group
 from commands.customer import customer_management_group
-from commands.user import *
+from commands.user_login import *
 
 
 @click.group()

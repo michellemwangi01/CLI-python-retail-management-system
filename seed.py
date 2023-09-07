@@ -96,7 +96,8 @@ if __name__ == '__main__':
         new_customer = Customer(
             first_name=first_name,
             last_name=last_name,
-            full_name=f'{first_name} {last_name}'
+            full_name=f'{first_name} {last_name}',
+            loyalty_points=0
         )
         session.add(new_customer)
         session.commit()
@@ -117,11 +118,13 @@ if __name__ == '__main__':
     purchases = []
     for customer in customers:
         product = session.query(Product).order_by(func.random()).first()
+        quantity = random.randint(2, 6)
         for i in range(random.randint(1, 4)):
             new_purchase = Purchase(
                 customer_id=customer.id,
                 product_id=product.id,
-                quantity=random.randint(2, 6)
+                quantity= quantity,
+                total_amount = product.price * quantity
             )
             session.add(new_purchase)
             session.commit()
