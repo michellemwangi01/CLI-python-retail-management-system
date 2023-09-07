@@ -5,18 +5,17 @@ import random
 
 fake = Faker()
 
-categories = ["Fresh Produce", "Dairy Products", "Bakery Items", "Meat and Poultry", "Seafood", "Canned Goods",
-              "Frozen Foods", "Snack Foods", "Beverages", "Condiments and Sauces"]
-categories2 = ["Cereal and Breakfast Foods",
+categories = ("Fresh Produce", "Dairy Products", "Bakery Items", "Meat and Poultry", "Seafood", "Canned Goods",
+              "Frozen Foods", "Snack Foods", "Beverages", "Condiments and Sauces")
+categories2 = ("Cereal and Breakfast Foods",
                "Pasta and Rice", "Canned and Dried Beans", "Personal Care Products", "Cleaning Supplies",
                "Paper Products",
-               "Health and Wellness", "Pet Supplies", "Household Goods", "Baby Care Products"]
-suppliers = ["GreenGrocer Suppliers", "FreshHarvest Foods", "QualityProvisions Co.", "PantryMaster Distributors",
+               "Health and Wellness", "Pet Supplies", "Household Goods", "Baby Care Products")
+suppliers = ("GreenGrocer Suppliers", "FreshHarvest Foods", "QualityProvisions Co.", "PantryMaster Distributors",
              "FarmToTable Supplies", "Gourmet Essentials Ltd.", "PrimeGrocery Suppliers", "MegaMart Wholesalers",
-             "EpicProduce Distributors", "PremiumPantry Imports"]
-user_roles = ['Employee', 'Customer']
-sample_products = [
-    "Bread",
+             "EpicProduce Distributors", "PremiumPantry Imports")
+user_roles = ('Employee', 'Customer')
+sample_products = ("Bread",
     "Milk",
     "Eggs",
     "Fresh Vegetables (e.g., lettuce, tomatoes, carrots)",
@@ -40,7 +39,7 @@ sample_products = [
     "Soft Drinks",
     "Snack Chips",
     "Laundry Detergent",
-    "Toilet Paper"]
+    "Toilet Paper")
 
 if __name__ == '__main__':
 

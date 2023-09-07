@@ -124,5 +124,3 @@ def delete_customer():
         click.echo(click.style("Sorry! You do not have permissions to access perform this action", fg='red'))
 
 
-def update_loyalty_points():
-    pass
