@@ -7,14 +7,14 @@ def inventory_management_group():
 
 @inventory_management_group.command()
 def view_categories():
-    '''View list of all categories'''
+    """-View list of all categories"""
     click.echo(session.query(Category).all())
 
 
 @inventory_management_group.command()
 @click.option('--name', '-n', prompt="Enter the category name")
 def new_category(name):
-    '''Add a new category'''
+    """-Add a new category"""
     categories = session.query(Category)
     if name not in categories:
         new_category = Category(
@@ -22,21 +22,23 @@ def new_category(name):
         )
         session.add(new_category)
         session.commit()
+        click.echo(f"Category Added: {new_category}")
         click.echo(click.style(f"--------------- CATEGORY SUCCESSFULLY ADDED ----------------", fg='green', bold=True))
     else:
         click.echo(click.style(f"*** Category '{name}' already exists. ***", fg='red'))
 
 
 @inventory_management_group.command()
-@click.option('--search_name', '-sn', prompt="Enter the category name to update")
-@click.option('--new_name', '-nn', prompt="Enter the name to be updated to")
-def update_category(search_name, new_name):
-    '''Update existing category details'''
-    category_to_update = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
+def update_category():
+    """-Update existing category details"""
+    click.echo(click.style(session.query(Category).all(), fg='yellow'))
+    category_id = click.prompt(click.style("Select the category number to update", fg='cyan'))
+    category_to_update = session.query(Category).filter_by(id=category_id).first()
     click.echo(f"{category_to_update}")
+    new_category_name = click.prompt(click.style("Enter new product name", fg='cyan'))
     if category_to_update:
         session.query(Category).filter_by(id=category_to_update.id).update({
-            Category.name: f'C-{new_name}'
+            Category.name: new_category_name
         })
         session.commit()
         click.echo(click.style("-------------- NAME SUCCESSFULLY UPDATED -------------", fg='green', bold=True))
@@ -48,7 +50,7 @@ def update_category(search_name, new_name):
 @inventory_management_group.command()
 @click.option('--search_name', '-sn', prompt="Enter the category name to delete")
 def delete_category(search_name):
-    '''delete a category'''
+    """-Delete a category"""
     category_to_delete = session.query(Category).filter(Category.name.like(f'%{search_name}%')).first()
     if category_to_delete:
         confirmation = click.prompt(
