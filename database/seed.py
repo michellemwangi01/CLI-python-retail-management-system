@@ -1,7 +1,6 @@
 from models.models import *
 from faker import Faker
 import random
-# from configuration.imports import engine
 
 fake = Faker()
 

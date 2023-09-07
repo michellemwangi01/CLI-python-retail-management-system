@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func,
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 
-import random
 
 import click
 
