@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Retail Management System is a comprehensive software solution designed to streamline and automate various aspects of managing a retail business. It offers a range of features and tools to help retailers manage inventory, track sales, handle customers, and more.
+This Retail Management System is a comprehensive software solution designed to streamline and automate various aspects of managing a retail business. It offers a range of features and tools to help retailers manage inventory, track sales, handle customers, and more.
 
 ## Features
 
@@ -96,7 +96,7 @@ pipenv shell
 
 ### 6. Testing methods
 
-all the testing methods are in the debug.py file, uncomment them and run the file
+all the testing methods are in the app.py file, uncomment them and run the file
 `python3 app.py`
 
 ## Usage
