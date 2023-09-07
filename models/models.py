@@ -82,3 +82,17 @@ class Category(Base):
 
     def __repr__(self):
         return f'({self.id}) {self.name}\n'
+
+class User(Base):
+
+    __tablename__ = 'users'
+
+    id = Column(Integer(), primary_key=True)
+    username = Column(String())
+    password = Column(String())
+    role = Column(String())
+
+    def __repr__(self):
+        return f'({self.id}) {self.username} Role:{self.role}\n'
+
+

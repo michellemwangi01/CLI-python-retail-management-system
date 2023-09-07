@@ -14,6 +14,7 @@ categories2 = ["Cereal and Breakfast Foods",
 suppliers = ["GreenGrocer Suppliers", "FreshHarvest Foods", "QualityProvisions Co.", "PantryMaster Distributors",
              "FarmToTable Supplies", "Gourmet Essentials Ltd.", "PrimeGrocery Suppliers", "MegaMart Wholesalers",
              "EpicProduce Distributors", "PremiumPantry Imports"]
+user_roles = ['Employee', 'Customer']
 
 if __name__ == '__main__':
 
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     session.query(Category).delete()
     session.query(Purchase).delete()
     session.query(Customer).delete()
+    session.query(User).delete()
 
     '''----------------------- C A T E G O R I E S ______________________--'''
     for item in categories:
@@ -90,4 +92,18 @@ if __name__ == '__main__':
             session.commit()
             purchases.append(new_purchase)
     print("Purchases import complete.")
+
+    '''----------------------- U S E R S ______________________--'''
+    users = []
+    for num in range(1, 5):
+        username = f'{fake.first_name()}.{fake.first_name()}'
+        new_user = User(
+            username = f'{fake.first_name()}.{fake.first_name()}',
+            password= fake.unique.word(),
+            role= random.choice(user_roles)
+        )
+        session.add(new_user)
+        session.commit()
+        customers.append(new_user)
+    print("User import complete.")
 

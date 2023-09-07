@@ -12,7 +12,8 @@ def sales_management_group():
 @click.option('--product_name', '-pn', prompt="Product to be purchased? (name)")
 @click.option('--quantity', '-pn', type=int, prompt="Quantity purchased?")
 def add_purchase(customer_name, product_name, quantity):
-    '''Add a new purchase'''
+    """-Add a new purchase"""
+    click.prompt(click.style("Search for a customer"))
     customer = session.query(Customer).filter(Customer.full_name.like(f'%{customer_name}%')).first()
     product = session.query(Product).filter(Product.name.like(f'%{product_name}%')).first()
 
@@ -58,13 +59,13 @@ def add_purchase(customer_name, product_name, quantity):
 
 @sales_management_group.command()
 @click.option('--name', '-f', prompt="Name of customer")
-def view_customer_purchase_details(name):
+def customer_purchase_history(name):
     '''View customer purchases'''
     customer = session.query(Customer).filter(Customer.full_name.like(f'%{name}%')).first()
     if customer:
         for purchase in customer.purchases:
             click.echo(
-                f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity}\n')
+               click.style( f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity} | {purchase.purchase_date}\n',fg='yellow'))
     else:
         click.echo(click.style("ERROR! Entered customer was not found.", fg='red', bold=True))
 
