@@ -30,15 +30,18 @@ def new_supplier(name):
 
 
 @supplier_management_group.command()
-@click.option('--search_name', '-sn', prompt="Enter the supplier name to update")
-@click.option('--new_name', '-nn', prompt="Enter the supplier name to update to")
-def update_supplier(search_name, new_name):
-    '''update an existing supplier record'''
-    supplier_to_update = session.query(Supplier).filter(Supplier.name.like(f'%{search_name}%')).first()
-    click.echo(f"{supplier_to_update}")
+def update_supplier():
+    """update an existing supplier record"""
+    click.echo(click.style(f'{session.query(Supplier).all()}', fg='yellow'))
+    supplier_id_to_update = click.prompt(
+        click.style("Choose a number above to select the supplier to update", fg='cyan'), type=int)
+    supplier_to_update = session.query(Supplier).filter_by(id=supplier_id_to_update).first()
+    click.echo(supplier_to_update)
+    new_supplier_name = click.prompt(click.style("New supplier name", fg='cyan'))
+
     if supplier_to_update:
         session.query(Supplier).filter_by(id=supplier_to_update.id).update({
-            Supplier.name: f'C-{new_name}'
+            Supplier.name: f'C-{new_supplier_name}'
         })
         session.commit()
         click.echo(click.style("Supplier name successfully updated!", fg='green', bold=True))
