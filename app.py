@@ -1,7 +1,4 @@
-import random
-
-from models import *
-import click
+from models.models import *
 
 
 # _------------------------------ Create Command Groups ------------------------
@@ -358,7 +355,7 @@ def add_purchase(customer_name, product_name, quantity):
         #         Purchase.quantity: Purchase.quantity+quantity
         #     })
         #     session.commit()
-        #     click.echo("This purchase already exists in the database. \n"
+        #     click.echo("This purchase already exists in the configuration. \n"
         #                "------------ QUANTITY SUCCESSFULLY UPDATED ----------- ")
         # else:
         new_purchase = Purchase(
@@ -405,7 +402,9 @@ def view_product_purchase_details(name):
     else:
         click.echo(click.style("ERROR! Entered product was not found.", fg='green', bold=True))
 
-
+# Loyalty points for customers
+# User Authentication (profiles) - clients(make purchase, view purchase history, view popular products and categories)
+                                # - Admin (add stuff, place orders, manage suppliers, categories, products
 if __name__ == '__main__':
     # Invoke mycommands() method which calls all the commands
     mycommands()

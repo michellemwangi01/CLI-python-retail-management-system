@@ -1,8 +1,8 @@
-"""added customer and purchases models
+"""Added Purchase Model
 
-Revision ID: 4c5310b4547d
-Revises: cea3731f019e
-Create Date: 2023-09-06 13:41:41.065228
+Revision ID: 04a1ca62d063
+Revises: 8ecdc70480e5
+Create Date: 2023-09-07 13:37:10.752405
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4c5310b4547d'
-down_revision: Union[str, None] = 'cea3731f019e'
+revision: str = '04a1ca62d063'
+down_revision: Union[str, None] = '8ecdc70480e5'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -24,6 +24,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=True),
     sa.Column('purchase_date', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),

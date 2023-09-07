@@ -1,15 +1,5 @@
-import datetime
-
-from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, func, Table, DateTime, and_
-from sqlalchemy.orm import sessionmaker, relationship, declarative_base
-from sqlalchemy.ext.associationproxy import association_proxy
-
-engine = create_engine('sqlite:///retail_store_management.db')
-Session = sessionmaker(bind=engine)
-session = Session()
-
+from configuration.imports import *
 Base = declarative_base()
-
 
 class Purchase(Base):
     __tablename__ = 'purchases'
@@ -35,6 +25,7 @@ class Customer(Base):
     first_name = Column(String())
     last_name = Column(String())
     full_name = Column(String(), default=lambda c: f'{c.first_name} {c.last_name}')
+    loyalty_points = Column(Integer())
 
     purchases = relationship('Purchase', back_populates='customer')
     products = association_proxy("purchases", "product")
