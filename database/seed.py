@@ -1,7 +1,7 @@
-from configuration.imports import *
 from models.models import *
 from faker import Faker
 import random
+# from configuration.imports import engine
 
 fake = Faker()
 
@@ -42,6 +42,10 @@ sample_products = ("Bread",
     "Toilet Paper")
 
 if __name__ == '__main__':
+
+    engine = create_engine('sqlite:///retail_store_management.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
     session.query(Product).delete()
     session.query(Supplier).delete()

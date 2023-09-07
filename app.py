@@ -16,7 +16,7 @@ def mycommands():
 
 if __name__ == '__main__':
     # _------------------------------ Add Command Groups to main group ------------------------
-    # login()
+
     mycommands.add_command(inventory_management_group)
     mycommands.add_command(supplier_management_group)
     mycommands.add_command(customer_management_group)

@@ -1,4 +1,3 @@
-import click
 from models.models import *
 from commands.user_login import login
 
@@ -32,7 +31,7 @@ def add_customer(first_name, last_name):
         )
         session.add(new_user)
         session.commit()
-        click.echo(click.style(f'New customer details: {new_customer}', fg='green'))
+        click.echo(click.style(f'New customer details:\n{new_customer}\nUsername: {new_user.username}'))
         click.echo(click.style("----------- CUSTOMER SUCCESSFULLY ADDED -----------", fg='green'))
 
     else:
