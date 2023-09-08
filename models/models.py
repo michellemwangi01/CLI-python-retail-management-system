@@ -37,7 +37,7 @@ class Customer(Base):
 
 
     def __repr__(self):
-        return f'({self.id}) {self.full_name} - Loyalty Points: {self.loyalty_points}'
+        return f'({self.id}) {self.full_name} - Loyalty Points: {self.loyalty_points}\n'
 
 
 class Product(Base):

@@ -1,3 +1,5 @@
+import click
+
 from models.models import *
 from commands.user_login import login
 
@@ -42,7 +44,7 @@ def add_customer(first_name, last_name):
 def update_customer():
     """-Update a customer record"""
     current_user = login()
-    if current_user.role == 'Employee':
+    if current_user.role == 'employee':
         """-Update an existing customer record"""
         click.echo(click.style(f'{session.query(Customer).all()}', fg='yellow'))
         customer_id_to_update = click.prompt(
@@ -75,7 +77,7 @@ def update_customer():
 def view_customer_details():
     """-View customer details"""
     current_user = login()
-    if current_user.role == 'Employee':
+    if current_user.role == 'employee':
         """-View all details of a customer"""
         customer_view_choice = click.prompt(click.style(
             "Would you like to view all users or a specific user?\n1. All customers\n2.Specific customer\nSelect",
@@ -98,8 +100,9 @@ def view_customer_details():
 @customer_management_group.command()
 def delete_customer():
     """-Delete an existing customer record"""
+    click.echo("Authorization required for delete action.")
     current_user = login()
-    if current_user.role == 'Employee':
+    if current_user.role == 'employee':
         click.echo(click.style("Authorization Approved", fg='green'))
         click.echo(click.style(f'{session.query(Customer).all()}', fg='yellow'))
         customer_id_to_delete = click.prompt(

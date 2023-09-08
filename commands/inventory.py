@@ -5,7 +5,7 @@ from commands.user_login import login
 
 
 # current_user = login()
-#     if current_user.role == 'Employee':
+#     if current_user.role == 'employee':
 #
 #     else:
 #         click.echo(click.style("Sorry! You do not have permissions to access perform this action", fg='red'))
@@ -40,7 +40,7 @@ def new_category(name):
 def update_category():
     """-Update existing category details"""
     current_user = login()
-    if current_user.role == 'Employee':
+    if current_user.role == 'employee':
         click.echo(click.style(session.query(Category).all(), fg='yellow'))
         category_id = click.prompt(click.style("Select the category number to update", fg='cyan'))
         category_to_update = session.query(Category).filter_by(id=category_id).first()
@@ -66,7 +66,7 @@ def update_category():
 def delete_category():
     """-Delete a category"""
     current_user = login()
-    if current_user.role == 'Employee':
+    if current_user.role == 'employee':
         click.echo(click.style("Authorization Approved!",fg='green'))
         click.echo(click.style(f'{session.query(Category).all()}', fg='yellow'))
         category_id_to_update = click.prompt(
@@ -101,10 +101,10 @@ def delete_category():
                     else:
                         click.echo(click.style("No category or related products found!", fg='red'))
                 elif category_update_mode == 2:
-                    new_category_name = click.prompt(
+                    new_category_id = click.prompt(
                         click.style("Which category would you like to transfer the product records to?", fg='cyan',
                                     bold=True))
-                    new_category = session.query(Category).filter(Category.name.like(f'%{new_category_name}%')).first()
+                    new_category = session.query(Category).filter_by(id=new_category_id).first()
                     session.query(Product).filter(Product.supplier_id == category_to_delete.id).update(
                         {
                             Product.category_id: new_category.id

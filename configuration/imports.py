@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 
 import click
 
+import random
+
 engine = create_engine('sqlite:///database/retail_store_management.db')
 Session = sessionmaker(bind=engine)
 session = Session()
