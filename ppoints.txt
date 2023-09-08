@@ -1,10 +1,22 @@
 Landing page - `python3 app.py`
-Customer
+
+1. Customer
     - add-customer
-    - make-purchase
     - delete-customer
     - view-customer-details
 
-Inventory
+2. Inventory
     - delete-category
 
+3. Product
+    - view-category-products
+    - view-supplier-products
+    - add-product
+    - delete-product
+
+4. Sales
+    - make-purchase
+    - customer-purchase-history
+
+5. supplier
+    - delete-supplier

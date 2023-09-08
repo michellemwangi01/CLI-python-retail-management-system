@@ -117,6 +117,9 @@ def delete_customer():
             if confirmation.lower() == 'y':
                 session.delete(customer_to_delete)
                 session.commit()
+                user_to_delete = session.query(User).filter_by(customer_id=customer_to_delete.id).first()
+                session.delete(user_to_delete)
+                session.commit()
                 click.echo(
                     click.style("------------------- CUSTOMER SUCCESSFULLY DELETED ---------------------", fg='green',
                                 bold=True))

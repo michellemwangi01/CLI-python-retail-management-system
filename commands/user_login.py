@@ -4,6 +4,7 @@ from models.models import *
 global current_user
 
 
+
 def login():
     username = click.prompt(click.style("Enter your username", fg='cyan'))
     password = click.prompt(click.style("Enter password", fg='cyan'),hide_input=True)

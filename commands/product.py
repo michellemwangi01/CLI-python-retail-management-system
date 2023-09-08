@@ -1,5 +1,6 @@
 import click
 from models.models import *
+from commands.user_login import login
 
 '''----------------------- P R O D U C T S -------------------------'''
 
@@ -98,18 +99,27 @@ def add_product():
 
 
 @product_management_group.command()
-@click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
-def delete_product(name):
+# @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
+def delete_product():
     """-Delete an existing product"""
-    product_to_delete = session.query(Product).filter(Product.name.like(f'%{name}%')).first()
-    if product_to_delete:
-        session.delete(product_to_delete)
-        session.commit()
-        click.echo(
-            click.style("------------- PRODUCT HAS BEEN SUCCESSFULLY DELETED ------------", fg='green', bold=True))
+    click.echo("Authorization required for this action.")
+    current_user = login()
+    if current_user and current_user.role == 'employee':
+        search_name = click.prompt(click.style("Search for product to delete", fg='cyan'))
+        product_to_delete = session.query(Product).filter(Product.name.like(f'%{search_name}%')).first()
+        if product_to_delete:
+            confirm_delete = click.prompt(click.style("Please note the the related purchases will also be deleted. Continue? Y/N", fg='cyan'))
+            if confirm_delete.lower() =='y':
+                session.delete(product_to_delete)
+                session.commit()
+                click.echo(
+                    click.style("------------- PRODUCT HAS BEEN SUCCESSFULLY DELETED ------------", fg='green', bold=True))
+            else:
+                click.echo(click.style("Delete action aborted!", fg='red'))
+        else:
+            click.echo(click.style("Error! No such product exists.", fg='red', bold=True))
     else:
-        click.echo(click.style("Error! No such product exists.", fg='red', bold=True))
-
+        click.echo(click.style("Sorry! Login failed or you are not authorized to perform this action"))
 
 product_details = ("name", "price", "quantity", "category", "supplier")
 

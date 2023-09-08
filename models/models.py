@@ -53,12 +53,12 @@ class Product(Base):
     category = relationship('Category', back_populates='products')
     supplier = relationship('Supplier', back_populates='products')
 
-    purchases = relationship('Purchase', back_populates='product')
+    purchases = relationship('Purchase', back_populates='product', cascade='all, delete-orphan')
     customers = association_proxy('purchases', 'customer')
 
 
     def __repr__(self):
-        return f'({self.id}): Name:{self.name} | Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Supplier:{self.supplier.name}'
+        return f'({self.id}): Name:{self.name} | Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Supplier:{self.supplier.name}\n'
 
 
 class Supplier(Base):

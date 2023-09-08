@@ -16,8 +16,13 @@ def make_purchase():
     click.echo(click.style("Login to make a purchase"))
     current_user = login()
     if current_user:
-        product_search = click.prompt(click.style("Product to purchase", fg='cyan'))
-        product_to_purchase = session.query(Product).filter(Product.name.like(f'%{product_search}%')).first()
+        product_list = session.query(Product).all()
+        for product in product_list:
+            click.echo(
+                click.style(f'({product.id}) {product.name} | ${product.price} | Qty. {product.quantity}', fg='yellow'))
+        product_selection_id = click.prompt(click.style("Select the product you want to purchase (number)", fg='cyan'))
+        # product_search = click.prompt(click.style("Search product to purchase", fg='cyan'))
+        product_to_purchase = session.query(Product).filter_by(id=product_selection_id).first()
         quantity = click.prompt(click.style("Quantity to purchase", fg='cyan'), type=int)
         if product_to_purchase:
             print(product_to_purchase)
@@ -35,9 +40,8 @@ def make_purchase():
                 session.add(new_purchase)
                 session.commit()
                 click.echo(click.style(
-                    f'--Purchase details--\nPurchased by: {current_user.username}\nProduct: {product_to_purchase.name}\nQty: {quantity}\nTotal Amount: {new_purchase.total_amount}\nDate of Purchase: {new_purchase.purchase_date}'))
-                click.echo(click.style("----------- PURCHASE SUCCESSFULL ------------", fg='green', bold=True))
-                click.echo(current_user)
+                    f'--Purchase details--\nPurchased by: {current_user}\nProduct: {product_to_purchase.name}\nQty: {quantity}\nTotal Amount: {new_purchase.total_amount}\nDate of Purchase: {new_purchase.purchase_date}'))
+                click.echo(click.style("----------- PURCHASE SUCCESSFUL ------------", fg='green', bold=True))
                 # update customer loyalty points
                 customer_to_update_points = session.query(Customer).filter_by(id=current_user.customer_id).first()
                 if customer_to_update_points:
