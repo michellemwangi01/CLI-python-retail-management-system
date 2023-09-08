@@ -1,6 +1,10 @@
 # Restaurant Retail Management System (RetailPro)
-![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
-![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+![python version](https://img.shields.io/badge/python-3.10.12+-blue.svg)
+![faker version](https://img.shields.io/badge/faker-1.12.0-mint.svg)
+![alembic version](https://img.shields.io/badge/alembic-1.12.0-orange.svg)
+![platforms](https://img.shields.io/badge/Platforms-Linux%20|%20Windows%20|%20Mac%20-purple.svg)
+![SQLAlchemy version](https://img.shields.io/badge/SQLAlchemy-2.0.20-cyan.svg)
+
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -20,13 +24,45 @@
 This Retail Management System is a comprehensive software solution designed to streamline and automate various aspects of managing a retail business. It offers a range of features and tools to help retailers manage inventory, track sales, handle customers, and more.
 
 ## Features
+### 1. User Management
+- **Login:** Allows users to login to the app
+- **User authorization:** Checks user authorization to allow access to specific commands
 
-- **Inventory Management:** Easily manage product inventory, categories, and suppliers.
-- **Customer Management:** Keep track of customer information, loyalty points, and purchase history.
-- **Product Management:** Add, update, and delete products with ease.
-- **Supplier Management:** Manage your suppliers and their product offerings.
-- **Sales Management:** Create and Record customer purchases, view sales reports, and track product popularity.
-- **User Authentication:** Secure access to different sections of the application based on user roles.
+### 1. Customer Management
+- **Add Customer:** Add a new customer to customer table
+- **Delete Customer:** Delete an existing customer record and its related purchase records
+- **View purchase history:** View purchase history for specific customer
+- **Update Customer:** Update a customer record
+- **View-customer-details :** View full customer details, all customers or a filtered customer
+- **Loyalty-points:** Keep track of customer loyalty points calculated based on purchase 
+
+### 2. Inventory Management
+- **New Category:** Delete a product category
+- **Update Category:** Update existing category details
+- **Delete Category:** Delete a product category and update its related records
+- **View-customer-details :** View full customer details
+- **Maintain Inventory:** Update product count everytime a purchase is made 
+
+### 3. Product Management
+- **Add-product:** Add a new product
+- **Update-product:** Update an existing product
+- **Delete-product:** Delete a product and it's related records
+- **View-category-products :** View the all the products of specific category
+- **View-product-details :** View full product details 
+- **View-supplier-products :** View the all the products of specific supplier
+
+### 1. Sales Management
+- **Customer-purchase-history:** View customer purchase history
+- **Make-purchase:** Customers can make purchases
+- **View-product-purchase-details:** View product purchases
+
+### 1. Supplier Management
+
+- **Delete-supplier:** Allows user to delete existing suppliers
+- **New-supplier:** Can add new suppliers
+- **Update-supplier :** Update details for an existing supplier
+- **View-suppliers:** View supplier details
+
 
 ## Getting Started
 
@@ -34,7 +70,16 @@ This Retail Management System is a comprehensive software solution designed to s
 
 Before you can run the Retail Management System, ensure you have the following prerequisites installed:
 
-- Python 3.10
+- Python3 v3.10 +
+
+- SQLAlchemy v2.0.20
+
+- Alembic v1.12.0
+
+- Faker v19.3.1
+
+- click
+
 - Virtual environment (optional but recommended)
 
 ### Installation
@@ -105,6 +150,7 @@ all the testing methods are in the app.py file, uncomment them and run the file
 3. Run the application using the command-line interface (CLI).
 
 ## Database Setup
+![DatabaseStructure.png](Images%2FDatabaseStructure.png)
 Run the following command to initialize the database and create necessary tables:
 ```
 python3 seed.py
