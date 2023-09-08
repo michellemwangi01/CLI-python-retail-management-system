@@ -28,7 +28,22 @@ This Retail Management System is a comprehensive software solution designed to s
 - **Login:** Allows users to login to the app
 - **User authorization:** Checks user authorization to allow access to specific commands
 
-### 1. Customer Management
+
+### 2. Sales & Purchases Management
+- **Customer-purchase-history:** View customer purchase history
+- **Make-purchase:** Customers can make purchases
+- **View-product-purchase-details:** View product purchases
+
+
+### 3. Inventory Management
+- **New Category:** Delete a product category
+- **Update Category:** Update existing category details
+- **Delete Category:** Delete a product category and update its related records
+- **View-customer-details :** View full customer details
+- **Maintain Inventory:** Update product count everytime a purchase is made 
+
+
+### 4. Customer Management
 - **Add Customer:** Add a new customer to customer table
 - **Delete Customer:** Delete an existing customer record and its related purchase records
 - **View purchase history:** View purchase history for specific customer
@@ -36,14 +51,8 @@ This Retail Management System is a comprehensive software solution designed to s
 - **View-customer-details :** View full customer details, all customers or a filtered customer
 - **Loyalty-points:** Keep track of customer loyalty points calculated based on purchase 
 
-### 2. Inventory Management
-- **New Category:** Delete a product category
-- **Update Category:** Update existing category details
-- **Delete Category:** Delete a product category and update its related records
-- **View-customer-details :** View full customer details
-- **Maintain Inventory:** Update product count everytime a purchase is made 
 
-### 3. Product Management
+### 5. Product Management
 - **Add-product:** Add a new product
 - **Update-product:** Update an existing product
 - **Delete-product:** Delete a product and it's related records
@@ -51,13 +60,8 @@ This Retail Management System is a comprehensive software solution designed to s
 - **View-product-details :** View full product details 
 - **View-supplier-products :** View the all the products of specific supplier
 
-### 1. Sales Management
-- **Customer-purchase-history:** View customer purchase history
-- **Make-purchase:** Customers can make purchases
-- **View-product-purchase-details:** View product purchases
 
-### 1. Supplier Management
-
+### 6. Supplier Management
 - **Delete-supplier:** Allows user to delete existing suppliers
 - **New-supplier:** Can add new suppliers
 - **Update-supplier :** Update details for an existing supplier
