@@ -1,3 +1,5 @@
+import click
+
 from models.models import *
 from faker import Faker
 import random
@@ -15,30 +17,30 @@ suppliers = ("GreenGrocer Suppliers", "FreshHarvest Foods", "QualityProvisions C
              "EpicProduce Distributors", "PremiumPantry Imports")
 user_roles = ('Employee', 'Customer')
 sample_products = ("Bread",
-    "Milk",
-    "Eggs",
-    "Fresh Vegetables (e.g., lettuce, tomatoes, carrots)",
-    "Fresh Fruits (e.g., apples, bananas, oranges)",
-    "Rice",
-    "Pasta",
-    "Canned Soup",
-    "Cereal",
-    "Cheese",
-    "Yogurt",
-    "Ground Beef",
-    "Chicken Breast",
-    "Pork Chops",
-    "Butter",
-    "Frozen Pizza",
-    "Canned Tuna",
-    "Peanut Butter",
-    "Jelly or Jam",
-    "Breakfast Cereal",
-    "Bottled Water",
-    "Soft Drinks",
-    "Snack Chips",
-    "Laundry Detergent",
-    "Toilet Paper")
+                   "Milk",
+                   "Eggs",
+                   "Fresh Vegetables (e.g., lettuce, tomatoes, carrots)",
+                   "Fresh Fruits (e.g., apples, bananas, oranges)",
+                   "Rice",
+                   "Pasta",
+                   "Canned Soup",
+                   "Cereal",
+                   "Cheese",
+                   "Yogurt",
+                   "Ground Beef",
+                   "Chicken Breast",
+                   "Pork Chops",
+                   "Butter",
+                   "Frozen Pizza",
+                   "Canned Tuna",
+                   "Peanut Butter",
+                   "Jelly or Jam",
+                   "Breakfast Cereal",
+                   "Bottled Water",
+                   "Soft Drinks",
+                   "Snack Chips",
+                   "Laundry Detergent",
+                   "Toilet Paper")
 
 if __name__ == '__main__':
 
@@ -74,14 +76,17 @@ if __name__ == '__main__':
     '''----------------------- P R O D U C T S ______________________--'''
     products = []
     for item in sample_products:
+        new_product_quantity = random.randint(0, 15)
+        stock_status = "In-stock" if new_product_quantity > 5 else "Reorder Required" if 0 < new_product_quantity <= 5 else "Out of Stock"
         supplier = session.query(Supplier).order_by(func.random()).first()
         category = session.query(Category).order_by(func.random()).first()
         new_product = Product(
             name=item,
             price=round(random.uniform(100, 1000), 2),
-            quantity=random.randint(0, 50),
+            quantity=new_product_quantity,
             supplier_id=supplier.id,
             category_id=category.id,
+            stock_status=stock_status
         )
         session.add(new_product)
         session.commit()
@@ -125,8 +130,8 @@ if __name__ == '__main__':
             new_purchase = Purchase(
                 customer_id=customer.id,
                 product_id=product.id,
-                quantity= quantity,
-                total_amount = product.price * quantity
+                quantity=quantity,
+                total_amount=product.price * quantity
             )
             session.add(new_purchase)
             session.commit()
