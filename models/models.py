@@ -1,5 +1,7 @@
 from configuration.imports import *
+
 Base = declarative_base()
+
 
 class Purchase(Base):
     __tablename__ = 'purchases'
@@ -35,7 +37,6 @@ class Customer(Base):
     def full_names(self):
         return f'{self.first_name} {self.last_name}'
 
-
     def __repr__(self):
         return f'({self.id}) {self.full_name} - Loyalty Points: {self.loyalty_points}\n'
 
@@ -49,13 +50,13 @@ class Product(Base):
     price = Column(Integer())
     quantity = Column(Integer())
     supplier_id = Column(Integer(), ForeignKey("suppliers.id"))
+    stock_status = Column(String(), default='In-stock')
 
     category = relationship('Category', back_populates='products')
     supplier = relationship('Supplier', back_populates='products')
 
     purchases = relationship('Purchase', back_populates='product', cascade='all, delete-orphan')
     customers = association_proxy('purchases', 'customer')
-
 
     def __repr__(self):
         return f'({self.id}): Name:{self.name} | Price:{self.price} | Quantity:{self.quantity} | Category:{self.category.name} | Supplier:{self.supplier.name}\n'
@@ -84,8 +85,8 @@ class Category(Base):
     def __repr__(self):
         return f'({self.id}) {self.name}\n'
 
-class User(Base):
 
+class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer(), primary_key=True)
@@ -96,5 +97,3 @@ class User(Base):
 
     def __repr__(self):
         return f'({self.id}) {self.username} | Role:{self.role}\n'
-
-

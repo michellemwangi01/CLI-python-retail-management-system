@@ -11,7 +11,6 @@ def product_management_group():
 
 
 @product_management_group.command()
-# @click.option('--category_name', '--cn', prompt="Enter the category to filter by")
 def view_category_products():
     """-View the all the products of specific category"""
     click.echo(click.style(f'{session.query(Category).all()}', fg='yellow'))
@@ -28,7 +27,6 @@ def view_category_products():
 
 
 @product_management_group.command()
-# @click.option('--search_supplier', '-ssup', prompt="Enter name of the supplier to see related products")
 def view_supplier_products():
     """-View supplier products"""
     click.echo(click.style(f'{session.query(Supplier).all()}', fg='yellow'))
@@ -73,7 +71,7 @@ def add_product():
     """-Add a new product"""
     new_product_name = click.prompt(click.style("Product name",fg='cyan'))
     new_product_price = click.prompt(click.style("Product price",fg='cyan'))
-    new_product_quantity = click.prompt(click.style("Product quantity",fg='cyan'))
+    new_product_quantity = click.prompt(click.style("Product quantity",fg='cyan'), type=int)
     click.echo(click.style(f'{session.query(Category).all()}', fg='yellow'))
     category_id = click.prompt(
         click.style("Enter a number above to select a category", fg='cyan'), type=int)
@@ -82,6 +80,7 @@ def add_product():
         click.style("Enter a number above to select a supplier", fg='cyan'), type=int)
     category_record = session.query(Category).filter_by(id=category_id).first()
     supplier_record = session.query(Supplier).filter_by(id=supplier_id).first()
+    stock_status = "In-stock" if new_product_quantity > 5 else "Reorder Required" if 0 < new_product_quantity < 5 else "Out of Stock"
     if category_record and supplier_record:
         new_product = Product(
             name=new_product_name,
@@ -89,6 +88,7 @@ def add_product():
             category_id=category_record.id,
             price=new_product_price,
             quantity=new_product_quantity,
+            stock_status = stock_status
         )
         session.add(new_product)
         session.commit()
@@ -99,7 +99,6 @@ def add_product():
 
 
 @product_management_group.command()
-# @click.option('--name', '-n', help="Search for product to delete", prompt="Enter product name to be deleted")
 def delete_product():
     """-Delete an existing product"""
     click.echo("Authorization required for this action.")
