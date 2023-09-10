@@ -59,18 +59,34 @@ def make_purchase():
 
 
 @sales_management_group.command()
-@click.option('--name', '-f', prompt="Name of customer")
-def customer_purchase_history(name):
+# @click.option('--name', '-f', prompt="Name of customer")
+def customer_purchase_history():
     '''View customer purchases'''
-    customer = session.query(Customer).filter(Customer.full_name.like(f'%{name}%')).first()
-    if customer:
-        for purchase in customer.purchases:
-            click.echo(
-                click.style(
-                    f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity} | {purchase.purchase_date}\n',
-                    fg='yellow'))
-    else:
-        click.echo(click.style("ERROR! Entered customer was not found.", fg='red', bold=True))
+    current_user = login()
+    if current_user.role == 'employee':
+        click.echo(click.style(session.query(Customer).all(), fg="yellow"))
+        customer_id = click.prompt(
+            click.style("Which of the above customer's history would you like to view?", fg='cyan'))
+        customer = session.query(Customer).filter_by(id=customer_id).first()
+        if customer:
+            for purchase in customer.purchases:
+                click.echo(
+                    click.style(
+                        f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity} | {purchase.purchase_date}\n',
+                        fg='yellow'))
+        else:
+            click.echo(click.style("ERROR! Entered customer was not found.", fg='red', bold=True))
+    if current_user.role == 'customer':
+        customer = session.query(Customer).filter_by(id=current_user.customer_id).first()
+        if customer:
+            for purchase in customer.purchases:
+                click.echo(f"{customer.full_name}, view your purchase history below")
+                click.echo(
+                    click.style(
+                        f'({purchase.id}) Customer: {purchase.customer.full_name} | Product: {purchase.product.name} | Qty: {purchase.quantity} | {purchase.purchase_date}\n',
+                        fg='yellow'))
+        else:
+            click.echo(click.style("ERROR! Entered customer was not found.", fg='red', bold=True))
 
 
 @sales_management_group.command()
